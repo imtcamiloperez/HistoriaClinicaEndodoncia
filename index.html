@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historia Clínica Endodóntica — Dr. Camilo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --azul:#0a3d62;--azul-m:#1a6fa8;--azul-c:#d4eaf7;--azul-g:#f0f7fd;
+  --verde:#1e7e4e;--rojo:#c0392b;--ambar:#d68910;
+  --gris:#f4f6f8;--gris-b:#dce3ea;--txt:#1a2633;--txt2:#5a7080;
+  --w:#fff;--shadow:0 2px 14px rgba(10,61,98,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#eef2f7;color:var(--txt);font-size:14px;line-height:1.6}
+
+/* ── APP SHELL ── */
+.app{display:flex;min-height:100vh}
+
+/* SIDEBAR desktop */
+.sidebar{width:230px;background:var(--azul);flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo h2{font-size:14px;font-weight:700;color:#fff;line-height:1.3}
+.sb-logo p{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+.sb-nav{flex:1;padding:8px 0}
+.nav-i{display:flex;align-items:center;gap:10px;padding:9px 18px;cursor:pointer;color:rgba(255,255,255,.55);font-size:12px;font-weight:500;border-left:3px solid transparent;transition:all .2s;user-select:none}
+.nav-i:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-i.on{color:#fff;border-left-color:#5dade2;background:rgba(93,173,226,.13)}
+.nav-i.done .nb{background:var(--verde)!important;color:#fff!important}
+.nb{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:rgba(255,255,255,.7);transition:all .2s}
+.nav-i.on .nb{background:#5dade2;color:var(--azul)}
+
+/* TOPBAR móvil */
+.topbar{display:none;background:var(--azul);padding:12px 16px;position:sticky;top:0;z-index:100;align-items:center;gap:12px}
+.topbar h2{font-size:14px;font-weight:700;color:#fff;flex:1}
+.menu-btn{background:none;border:none;cursor:pointer;color:#fff;font-size:22px;padding:0}
+.mob-nav{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200}
+.mob-nav.open{display:flex}
+.mob-nav-inner{width:260px;background:var(--azul);height:100%;overflow-y:auto;padding:16px 0}
+.mob-close{display:block;padding:10px 18px;color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+
+/* MAIN */
+.main{flex:1;padding:24px;max-width:820px;min-width:0}
+
+/* STEP HEADER */
+.step-hdr{background:var(--w);border-radius:14px;box-shadow:var(--shadow);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.step-ico{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--azul),var(--azul-m));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.step-hdr h1{font-size:18px;font-weight:700;color:var(--azul)}
+.step-hdr p{font-size:12px;color:var(--txt2);margin-top:1px}
+.prog{height:4px;background:var(--gris-b);border-radius:2px;margin-top:8px}
+.prog-f{height:100%;background:linear-gradient(90deg,var(--azul-m),#5dade2);border-radius:2px;transition:width .4s}
+
+/* CARDS */
+.card{background:var(--w);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.card-h{background:linear-gradient(135deg,var(--azul),var(--azul-m));padding:12px 18px;display:flex;align-items:center;gap:10px}
+.card-h h3{color:#fff;font-size:13px;font-weight:600}
+.card-ico{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:15px}
+.card-b{padding:18px}
+
+/* GRID */
+.g1{display:grid;gap:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.gf{grid-column:1/-1}
+
+/* CAMPOS */
+.f{display:flex;flex-direction:column;gap:4px}
+.f label{font-size:11px;font-weight:700;color:var(--azul-m);text-transform:uppercase;letter-spacing:.04em}
+.f input,.f textarea,.f select{border:1.5px solid var(--gris-b);border-radius:8px;padding:8px 11px;font-family:inherit;font-size:13px;color:var(--txt);background:var(--azul-g);transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+.f input:focus,.f textarea:focus{border-color:var(--azul-m);box-shadow:0 0 0 3px rgba(26,111,168,.1);background:#fff}
+.f textarea{resize:vertical;min-height:72px;line-height:1.55}
+
+/* CHIPS */
+.cg{display:flex;flex-direction:column;gap:5px}
+.cg label{font-size:11px;font-weight:700;color:var(--azul-m);text-transform:uppercase;letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.chip{padding:5px 12px;border-radius:18px;border:1.5px solid var(--gris-b);background:var(--w);color:var(--txt2);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;-webkit-tap-highlight-color:transparent}
+.chip:hover{border-color:var(--azul-m);color:var(--azul)}
+.chip.on{background:var(--azul-m);border-color:var(--azul-m);color:#fff;font-weight:600}
+.chip.on.v{background:var(--verde);border-color:var(--verde)}
+.chip.on.r{background:var(--rojo);border-color:var(--rojo)}
+.chip.on.a{background:var(--ambar);border-color:var(--ambar)}
+
+/* EVA */
+.eva{display:flex;gap:4px}
+.ev{flex:1;height:42px;border-radius:8px;border:1.5px solid var(--gris-b);background:var(--w);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--txt);-webkit-tap-highlight-color:transparent}
+.ev:active{transform:scale(.95)}
+.ev.on[data-v="1"],.ev.on[data-v="2"],.ev.on[data-v="3"]{background:var(--verde);border-color:var(--verde);color:#fff}
+.ev.on[data-v="4"],.ev.on[data-v="5"],.ev.on[data-v="6"]{background:var(--ambar);border-color:var(--ambar);color:#fff}
+.ev.on[data-v="7"],.ev.on[data-v="8"],.ev.on[data-v="9"],.ev.on[data-v="10"]{background:var(--rojo);border-color:var(--rojo);color:#fff}
+.eva-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--txt2);margin-top:3px}
+
+/* ODONTOGRAMA */
+.od-row{display:flex;gap:3px;justify-content:center;flex-wrap:wrap}
+.dt{width:36px;height:34px;border-radius:7px;border:1.5px solid var(--gris-b);background:var(--w);font-size:9.5px;font-weight:600;color:var(--txt2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.dt:hover{border-color:var(--azul-m);color:var(--azul)}
+.dt.on{background:var(--azul-m);border-color:var(--azul-m);color:#fff}
+.dt-info{background:var(--azul-g);border:1px solid var(--azul-c);border-radius:8px;padding:9px 12px;font-size:12px;display:none;margin-top:6px}
+.dt-info.vis{display:block}
+.dt-info strong{color:var(--azul);display:block;margin-bottom:2px}
+
+/* PRUEBAS DX */
+.px-t{border:1px solid var(--gris-b);border-radius:10px;overflow:hidden}
+.px-r{display:grid;grid-template-columns:160px 1fr;border-bottom:1px solid var(--gris-b);align-items:center}
+.px-r:last-child{border-bottom:none}
+.px-l{padding:8px 12px;font-size:11.5px;font-weight:600;color:var(--txt2);background:var(--gris);border-right:1px solid var(--gris-b)}
+.px-o{padding:7px 10px;display:flex;flex-wrap:wrap;gap:5px}
+
+/* CONDUCTOS */
+.cond-card{border:1.5px solid var(--azul-c);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.cond-h{background:var(--azul-c);padding:8px 14px;display:flex;align-items:center;justify-content:space-between}
+.cond-h h4{color:var(--azul);font-size:12.5px;font-weight:700}
+.cond-b{padding:14px;display:grid;gap:11px}
+
+/* LIMAS */
+.limas{display:flex;flex-wrap:wrap;gap:5px}
+.lb{width:42px;height:34px;border-radius:7px;border:1.5px solid var(--gris-b);background:var(--w);font-size:10.5px;font-weight:700;color:var(--txt2);cursor:pointer;transition:all .15s}
+.lb.on{background:var(--azul);border-color:var(--azul);color:#fff}
+
+/* SESION TABS */
+.ses-tabs{display:flex;gap:5px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.ses-tab{padding:7px 16px;border-radius:18px;border:1.5px solid var(--gris-b);background:var(--w);font-size:12.5px;font-weight:600;color:var(--txt2);cursor:pointer;white-space:nowrap;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.ses-tab.on{background:var(--azul);border-color:var(--azul);color:#fff}
+.ses-p{display:none}
+.ses-p.vis{display:block}
+
+/* DIVIDER */
+.div{height:1px;background:var(--gris-b);margin:14px 0}
+
+/* BADGE */
+.badge-ia{background:#fef9e7;color:var(--ambar);border:1px solid #f9e3a5;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:8px}
+
+/* RESUMEN */
+.res-card{background:var(--azul-g);border:1px solid var(--azul-c);border-radius:9px;padding:12px 14px;margin-bottom:10px}
+.res-card h4{color:var(--azul);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px}
+.res-i{display:flex;gap:8px;font-size:12px;margin-bottom:3px}
+.res-i span:first-child{color:var(--txt2);min-width:130px;flex-shrink:0}
+
+/* BOTONES NAV */
+.nav-btns{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px}
+.btn{padding:10px 22px;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.btn-prev{background:var(--w);border:1.5px solid var(--gris-b);color:var(--txt2)}
+.btn-prev:hover{border-color:var(--azul-m);color:var(--azul)}
+.btn-next{background:var(--azul-m);color:#fff;flex:1;max-width:200px}
+.btn-next:hover{background:var(--azul)}
+.btn-gen{background:linear-gradient(135deg,var(--verde),#27ae60);color:#fff;padding:13px 28px;font-size:14px;width:100%;border-radius:10px;margin-top:4px}
+.btn-gen:active{transform:scale(.98)}
+
+/* SECCIONES */
+.sec{display:none}
+.sec.vis{display:block}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .topbar{display:flex}
+  .main{padding:12px}
+  .g2,.g3{grid-template-columns:1fr}
+  .px-r{grid-template-columns:1fr}
+  .px-l{border-right:none;border-bottom:1px solid var(--gris-b)}
+  .step-hdr{padding:12px 14px;gap:10px}
+  .step-ico{width:38px;height:38px;font-size:18px}
+  .step-hdr h1{font-size:15px}
+  .ev{height:36px;font-size:12px}
+  .dt{width:32px;height:30px;font-size:9px}
+}
+@media(min-width:769px){
+  .mob-nav{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR MÓVIL -->
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+  <h2 id="tb-titulo">Datos del paciente</h2>
+</div>
+
+<!-- MENÚ MÓVIL OVERLAY -->
+<div class="mob-nav" id="mob-nav" onclick="toggleMenu()">
+  <div class="mob-nav-inner" onclick="e=>e.stopPropagation()">
+    <button class="mob-close" onclick="toggleMenu()">✕ Cerrar menú</button>
+    <nav id="mob-nav-list"></nav>
+  </div>
+</div>
+
+<div class="app">
+<!-- SIDEBAR DESKTOP -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <h2>Historia Clínica Endodóntica</h2>
+    <p>Dr. Camilo — Bogotá D.C.</p>
+  </div>
+  <nav class="sb-nav" id="desk-nav"></nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="step-hdr">
+    <div class="step-ico" id="step-ico">👤</div>
+    <div style="flex:1;min-width:0">
+      <h1 id="step-titulo">Datos del paciente</h1>
+      <p>Resolución 1995/1999 — Ministerio de Salud de Colombia</p>
+      <div class="prog"><div class="prog-f" id="prog" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- ════ 01 DATOS ════ -->
+  <div class="sec vis" id="s0">
+    <div class="card">
+      <div class="card-h"><div class="card-ico">👤</div><h3>Datos del paciente</h3></div>
+      <div class="card-b g1">
+        <div class="f gf"><label>Nombre completo</label><input id="nombre" type="text" placeholder="Nombres y apellidos completos"></div>
+        <div class="g2">
+          <div class="f"><label>Documento de identidad</label><input id="doc" type="text" placeholder="Número de cédula"></div>
+          <div class="f"><label>Fecha de consulta</label><input id="fecha" type="date"></div>
+          <div class="f"><label>Fecha de nacimiento</label><input id="fnac" type="date"></div>
+          <div class="f"><label>Edad</label><input id="edad" type="text" placeholder="Ej: 35 años"></div>
+          <div class="f"><label>Teléfono</label><input id="tel" type="tel" placeholder="300 000 0000"></div>
+          <div class="f"><label>Correo electrónico</label><input id="correo" type="email" placeholder="correo@ejemplo.com"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 02 ANAMNESIS ════ -->
+  <div class="sec" id="s1">
+    <div class="card">
+      <div class="card-h"><div class="card-ico">📋</div><h3>Anamnesis</h3></div>
+      <div class="card-b">
+        <div class="f" style="margin-bottom:14px"><label>Motivo de consulta (en palabras del paciente)</label><textarea id="motivo" placeholder="Descripción..."></textarea></div>
+        <div class="div"></div>
+        <div class="cg" style="margin-bottom:12px"><label>Tipo de dolor</label>
+          <div class="chips" id="tdolor">
+            <div class="chip" onclick="sc(this,'tdolor')">Espontáneo</div>
+            <div class="chip" onclick="sc(this,'tdolor')">Solo al morder</div>
+            <div class="chip" onclick="sc(this,'tdolor')">Al frío</div>
+            <div class="chip" onclick="sc(this,'tdolor')">Al calor</div>
+            <div class="chip" onclick="sc(this,'tdolor')">Al frío y calor</div>
+            <div class="chip" onclick="sc(this,'tdolor')">Todos</div>
+            <div class="chip" onclick="sc(this,'tdolor')">Sin dolor</div>
+          </div>
+        </div>
+        <div class="cg" style="margin-bottom:12px"><label>Intensidad del dolor — EVA 1 a 10</label>
+          <div class="eva" id="eva">
+            <button class="ev" data-v="1" onclick="sev(this)">1</button>
+            <button class="ev" data-v="2" onclick="sev(this)">2</button>
+            <button class="ev" data-v="3" onclick="sev(this)">3</button>
+            <button class="ev" data-v="4" onclick="sev(this)">4</button>
+            <button class="ev" data-v="5" onclick="sev(this)">5</button>
+            <button class="ev" data-v="6" onclick="sev(this)">6</button>
+            <button class="ev" data-v="7" onclick="sev(this)">7</button>
+            <button class="ev" data-v="8" onclick="sev(this)">8</button>
+            <button class="ev" data-v="9" onclick="sev(this)">9</button>
+            <button class="ev" data-v="10" onclick="sev(this)">10</button>
+          </div>
+          <div class="eva-lbl"><span>Sin dolor</span><span>Moderado</span><span>Máximo</span></div>
+        </div>
+        <div class="div"></div>
+        <div class="g2">
+          <div class="cg"><label>Duración del dolor</label>
+            <div class="chips" id="ddolor">
+              <div class="chip" onclick="sc(this,'ddolor')">Momentáneo</div>
+              <div class="chip" onclick="sc(this,'ddolor')">Prolongado</div>
+              <div class="chip" onclick="sc(this,'ddolor')">Continuo</div>
+              <div class="chip" onclick="sc(this,'ddolor')">Solo al estímulo</div>
+            </div>
+          </div>
+          <div class="cg"><label>Factores que alivian</label>
+            <div class="chips" id="alivio">
+              <div class="chip v" onclick="sc(this,'alivio',1)">Frío</div>
+              <div class="chip v" onclick="sc(this,'alivio',1)">Calor</div>
+              <div class="chip v" onclick="sc(this,'alivio',1)">Analgésicos</div>
+              <div class="chip r" onclick="sc(this,'alivio',1)">Nada alivia</div>
+            </div>
+          </div>
+        </div>
+        <div class="div"></div>
+        <div class="cg" style="margin-bottom:12px"><label>Tratamientos previos en el diente</label>
+          <div class="chips" id="tprev">
+            <div class="chip" onclick="sc(this,'tprev',1)">Ninguno</div>
+            <div class="chip" onclick="sc(this,'tprev',1)">Resina</div>
+            <div class="chip" onclick="sc(this,'tprev',1)">Amalgama</div>
+            <div class="chip" onclick="sc(this,'tprev',1)">Corona</div>
+            <div class="chip" onclick="sc(this,'tprev',1)">Endodoncia previa</div>
+            <div class="chip" onclick="sc(this,'tprev',1)">Poste</div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="f"><label>Medicamentos actuales</label><input id="meds" type="text" placeholder="Ninguno / especificar"></div>
+          <div class="cg"><label>Alergias medicamentosas</label>
+            <div class="chips" id="alergia">
+              <div class="chip" onclick="sc(this,'alergia',1)">Ninguna</div>
+              <div class="chip r" onclick="sc(this,'alergia',1)">Penicilina</div>
+              <div class="chip r" onclick="sc(this,'alergia',1)">AINES</div>
+              <div class="chip r" onclick="sc(this,'alergia',1)">Látex</div>
+              <div class="chip r" onclick="sc(this,'alergia',1)">Anestésicos</div>
+              <div class="chip r" onclick="sc(this,'alergia',1)">Otra</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 03 ANTECEDENTES ════ -->
+  <div class="sec" id="s2">
+    <div class="card">
+      <div class="card-h"><div class="card-ico">⚕️</div><h3>Antecedentes médicos</h3></div>
+      <div class="card-b">
+        <div class="cg" style="margin-bottom:12px"><label>Enfermedades sistémicas</label>
+          <div class="chips" id="enfsist">
+            <div class="chip v" onclick="sc(this,'enfsist',1)">Ninguna</div>
+            <div class="chip a" onclick="sc(this,'enfsist',1)">Diabetes</div>
+            <div class="chip a" onclick="sc(this,'enfsist',1)">Hipertensión</div>
+            <div class="chip a" onclick="sc(this,'enfsist',1)">Cardiopatía</div>
+            <div class="chip r" onclick="sc(this,'enfsist',1)">Coagulopatía</div>
+            <div class="chip r" onclick="sc(this,'enfsist',1)">Inmunosupresión</div>
+            <div class="chip a" onclick="sc(this,'enfsist',1)">Bifosfonatos</div>
+            <div class="chip a" onclick="sc(this,'enfsist',1)">Otra</div>
+          </div>
+        </div>
+        <div class="g3">
+          <div class="cg"><label>Anticoagulantes</label>
+            <div class="chips" id="anticoa">
+              <div class="chip v" onclick="sc(this,'anticoa')">No</div>
+              <div class="chip a" onclick="sc(this,'anticoa')">Sí</div>
+            </div>
+          </div>
+          <div class="cg"><label>Embarazo</label>
+            <div class="chips" id="embar">
+              <div class="chip" onclick="sc(this,'embar')">No aplica</div>
+              <div class="chip v" onclick="sc(this,'embar')">No</div>
+              <div class="chip a" onclick="sc(this,'embar')">Sí</div>
+            </div>
+          </div>
+          <div class="cg"><label>Estado inmunológico</label>
+            <div class="chips" id="inmuno">
+              <div class="chip v" onclick="sc(this,'inmuno')">Normal</div>
+              <div class="chip r" onclick="sc(this,'inmuno')">Comprometido</div>
+            </div>
+          </div>
+        </div>
+        <div class="div"></div>
+        <div class="f"><label>Observaciones antecedentes</label><textarea id="obs-ant" placeholder="Detallar condiciones relevantes..."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 04 EXAMEN CLÍNICO ════ -->
+  <div class="sec" id="s3">
+    <div class="card">
+      <div class="card-h"><div class="card-ico">🔬</div><h3>Examen clínico</h3></div>
+      <div class="card-b">
+        <div class="cg" style="margin-bottom:12px"><label>Diente comprometido — tocar para seleccionar</label>
+          <div style="font-size:10px;color:var(--txt2);margin-bottom:4px;text-align:center">Superiores →</div>
+          <div class="od-row" id="sup"></div>
+          <div class="od-row" id="inf" style="margin-top:3px"></div>
+          <div style="font-size:10px;color:var(--txt2);margin-top:4px;text-align:center">← Inferiores</div>
+          <div class="dt-info" id="dtinfo"></div>
+        </div>
+        <div class="div"></div>
+        <div class="g3">
+          <div class="cg"><label>Color de corona</label>
+            <div class="chips" id="color">
+              <div class="chip v" onclick="sc(this,'color')">Normal</div>
+              <div class="chip a" onclick="sc(this,'color')">Oscurecida</div>
+              <div class="chip r" onclick="sc(this,'color')">Muy oscurecida</div>
+            </div>
+          </div>
+          <div class="cg"><label>Fractura</label>
+            <div class="chips" id="frac">
+              <div class="chip v" onclick="sc(this,'frac')">Sin fractura</div>
+              <div class="chip a" onclick="sc(this,'frac')">Coronal</div>
+              <div class="chip r" onclick="sc(this,'frac')">Radicular</div>
+            </div>
+          </div>
+          <div class="cg"><label>Fístula / absceso</label>
+            <div class="chips" id="fist">
+              <div class="chip v" onclick="sc(this,'fist')">Ausente</div>
+              <div class="chip a" onclick="sc(this,'fist')">Fístula</div>
+              <div class="chip r" onclick="sc(this,'fist')">Absceso</div>
+            </div>
+          </div>
+        </div>
+        <div class="cg" style="margin:12px 0"><label>Examen extraoral</label>
+          <div class="chips" id="extrao">
+            <div class="chip v" onclick="sc(this,'extrao',1)">Sin alteraciones</div>
+            <div class="chip a" onclick="sc(this,'extrao',1)">Asimetría</div>
+            <div class="chip a" onclick="sc(this,'extrao',1)">Adenopatías</div>
+            <div class="chip r" onclick="sc(this,'extrao',1)">Edema facial</div>
+          </div>
+        </div>
+        <div class="g2" style="margin-bottom:12px">
+          <div class="f"><label>Restauraciones previas</label><input id="rest" type="text" placeholder="Describir"></div>
+          <div class="f"><label>Caries</label><input id="caries" type="text" placeholder="Localización y extensión"></div>
+        </div>
+        <div class="div"></div>
+        <div class="cg" style="margin-bottom:8px"><label>Pruebas diagnósticas</label></div>
+        <div class="px-t">
+          <div class="px-r"><div class="px-l">Percusión vertical</div><div class="px-o" id="pv"><div class="chip v" onclick="sc(this,'pv')">Negativa</div><div class="chip a" onclick="sc(this,'pv')">Positiva leve</div><div class="chip r" onclick="sc(this,'pv')">Positiva intensa</div></div></div>
+          <div class="px-r"><div class="px-l">Percusión horizontal</div><div class="px-o" id="ph"><div class="chip v" onclick="sc(this,'ph')">Negativa</div><div class="chip a" onclick="sc(this,'ph')">Positiva leve</div><div class="chip r" onclick="sc(this,'ph')">Positiva intensa</div></div></div>
+          <div class="px-r"><div class="px-l">Palpación apical</div><div class="px-o" id="pa"><div class="chip v" onclick="sc(this,'pa')">Negativa</div><div class="chip a" onclick="sc(this,'pa')">Positiva</div><div class="chip r" onclick="sc(this,'pa')">Positiva + edema</div></div></div>
+          <div class="px-r"><div class="px-l">Prueba de frío</div><div class="px-o" id="pfr"><div class="chip v" onclick="sc(this,'pfr')">Normal</div><div class="chip a" onclick="sc(this,'pfr')">Exacerbada</div><div class="chip r" onclick="sc(this,'pfr')">Sin respuesta</div><div class="chip r" onclick="sc(this,'pfr')">Dolor prolongado</div></div></div>
+          <div class="px-r"><div class="px-l">Localizador apical</div><div class="px-o" id="lap"><div class="chip v" onclick="sc(this,'lap')">Responde</div><div class="chip r" onclick="sc(this,'lap')">No responde</div><div class="chip a" onclick="sc(this,'lap')">Inestable</div></div></div>
+          <div class="px-r"><div class="px-l">Movilidad dentaria</div><div class="px-o" id="mov"><div class="chip v" onclick="sc(this,'mov')">Grado 0</div><div class="chip a" onclick="sc(this,'mov')">Grado I</div><div class="chip a" onclick="sc(this,'mov')">Grado II</div><div class="chip r" onclick="sc(this,'mov')">Grado III</div></div></div>
+          <div class="px-r"><div class="px-l">Sondaje periodontal</div><div class="px-o" id="son"><div class="chip v" onclick="sc(this,'son')">&lt;3mm</div><div class="chip a" onclick="sc(this,'son')">3–5mm</div><div class="chip r" onclick="sc(this,'son')">&gt;6mm</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 05 RADIOGRAFÍA ════ -->
+  <div class="sec" id="s4">
+    <div class="card">
+      <div class="card-h"><div class="card-ico">📡</div><h3>Interpretación radiográfica</h3></div>
+      <div class="card-b">
+        <div class="g2" style="margin-bottom:12px">
+          <div class="f"><label>Tipo de radiografía</label><input id="tipo-rx" type="text" placeholder="Ej: Periapical digital"></div>
+          <div class="f"><label>Longitud estimada</label><input id="long-est" type="text" placeholder="Ej: 21mm"></div>
+        </div>
+        <div class="cg" style="margin-bottom:12px"><label>Conductos observados en Rx</label>
+          <div class="chips" id="ncond">
+            <div class="chip" onclick="sc(this,'ncond')">1</div><div class="chip" onclick="sc(this,'ncond')">2</div>
+            <div class="chip" onclick="sc(this,'ncond')">3</div><div class="chip" onclick="sc(this,'ncond')">4</div>
+            <div class="chip" onclick="sc(this,'ncond')">5</div><div class="chip a" onclick="sc(this,'ncond')">6</div>
+            <div class="chip r" onclick="sc(this,'ncond')">7 (raro)</div>
+          </div>
+        </div>
+        <div class="cg" style="margin-bottom:12px"><label>Estado periapical</label>
+          <div class="chips" id="eperiap">
+            <div class="chip v" onclick="sc(this,'eperiap')">Normal</div>
+            <div class="chip a" onclick="sc(this,'eperiap')">Engrosamiento ligamento</div>
+            <div class="chip a" onclick="sc(this,'eperiap')">Lesión &lt;3mm</div>
+            <div class="chip r" onclick="sc(this,'eperiap')">Lesión 3–6mm</div>
+            <div class="chip r" onclick="sc(this,'eperiap')">Lesión &gt;6mm</div>
+            <div class="chip r" onclick="sc(this,'eperiap')">Reabsorción radicular</div>
+          </div>
+        </div>
+        <div class="f"><label>Descripción radiográfica</label><textarea id="desc-rx" placeholder="Describir imagen, bordes, tamaño y relación con estructuras adyacentes..."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 06 DIAGNÓSTICO ════ -->
+  <div class="sec" id="s5">
+    <div class="card">
+      <div class="card-h"><div class="card-ico">🎯</div><h3>Diagnóstico — Clasificación AAE</h3></div>
+      <div class="card-b g2">
+        <div class="cg"><label>Diagnóstico pulpar</label>
+          <div class="chips" id="dxp" style="flex-direction:column;align-items:flex-start">
+            <div class="chip v" onclick="sc(this,'dxp')">Pulpa normal</div>
+            <div class="chip a" onclick="sc(this,'dxp')">Pulpitis reversible</div>
+            <div class="chip a" onclick="sc(this,'dxp')">Pulpitis irreversible sintomática</div>
+            <div class="chip a" onclick="sc(this,'dxp')">Pulpitis irreversible asintomática</div>
+            <div class="chip r" onclick="sc(this,'dxp')">Necrosis pulpar</div>
+            <div class="chip" onclick="sc(this,'dxp')">Previamente tratado</div>
+            <div class="chip" onclick="sc(this,'dxp')">Previamente iniciado</div>
+          </div>
+        </div>
+        <div class="cg"><label>Diagnóstico periapical</label>
+          <div class="chips" id="dxpe" style="flex-direction:column;align-items:flex-start">
+            <div class="chip v" onclick="sc(this,'dxpe')">Tejidos apicales normales</div>
+            <div class="chip a" onclick="sc(this,'dxpe')">Periodontitis apical sintomática</div>
+            <div class="chip a" onclick="sc(this,'dxpe')">Periodontitis apical asintomática</div>
+            <div class="chip r" onclick="sc(this,'dxpe')">Absceso apical agudo</div>
+            <div class="chip r" onclick="sc(this,'dxpe')">Absceso apical crónico</div>
+            <div class="chip" onclick="sc(this,'dxpe')">Osteítis condensante</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 07 PLAN ════ -->
+  <div class="sec" id="s6">
+    <div class="card">
+      <div class="card-h"><div class="card-ico">📝</div><h3>Plan de tratamiento</h3></div>
+      <div class="card-b g2">
+        <div class="cg"><label>Sesiones estimadas</label>
+          <div class="chips" id="nses">
+            <div class="chip" onclick="sc(this,'nses')">1 sesión</div><div class="chip" onclick="sc(this,'nses')">2 sesiones</div>
+            <div class="chip" onclick="sc(this,'nses')">3 sesiones</div><div class="chip" onclick="sc(this,'nses')">4 o más</div>
+          </div>
+        </div>
+        <div class="cg"><label>Técnica de obturación</label>
+          <div class="chips" id="tec">
+            <div class="chip" onclick="sc(this,'tec')">Termoplástica (Calamus)</div>
+            <div class="chip" onclick="sc(this,'tec')">Condensación lateral</div>
+            <div class="chip" onclick="sc(this,'tec')">Vertical caliente</div>
+            <div class="chip" onclick="sc(this,'tec')">Híbrida</div>
+          </div>
+        </div>
+        <div class="cg"><label>Pronóstico</label>
+          <div class="chips" id="pron">
+            <div class="chip v" onclick="sc(this,'pron')">Favorable</div>
+            <div class="chip a" onclick="sc(this,'pron')">Reservado</div>
+            <div class="chip r" onclick="sc(this,'pron')">Desfavorable</div>
+          </div>
+        </div>
+        <div class="cg"><label>Consentimiento informado</label>
+          <div class="chips" id="cons">
+            <div class="chip v" onclick="sc(this,'cons')">Firmado</div>
+            <div class="chip a" onclick="sc(this,'cons')">Pendiente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 08 SESIONES ════ -->
+  <div class="sec" id="s7">
+    <div class="card">
+      <div class="card-h">
+        <div class="card-ico">🔩</div>
+        <h3>Evoluciones por sesión</h3>
+        <span class="badge-ia">⚡ IA desde audio</span>
+      </div>
+      <div class="card-b">
+        <div class="ses-tabs" id="ses-tabs">
+          <div class="ses-tab on" onclick="showSes(0)">Sesión 1</div>
+          <div class="ses-tab" onclick="showSes(1)">Sesión 2</div>
+          <div class="ses-tab" onclick="showSes(2)">Sesión 3</div>
+          <div class="ses-tab" onclick="showSes(3)">Sesión 4</div>
+        </div>
+        <div id="ses-panels"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ 09 CONTROL + RESUMEN ════ -->
+  <div class="sec" id="s8">
+    <div class="card">
+      <div class="card-h"><div class="card-ico">✅</div><h3>Control post-tratamiento</h3></div>
+      <div class="card-b">
+        <div class="g2" style="margin-bottom:12px">
+          <div class="f"><label>Fecha del control</label><input id="fctrl" type="date"></div>
+          <div class="f"><label>Alta / seguimiento</label><input id="alta" type="text" placeholder="Ej: Alta definitiva"></div>
+        </div>
+        <div class="cg"><label>Rx de control</label>
+          <div class="chips" id="rxctrl">
+            <div class="chip v" onclick="sc(this,'rxctrl')">Normal — alta definitiva</div>
+            <div class="chip a" onclick="sc(this,'rxctrl')">Lesión en resolución — control 6m</div>
+            <div class="chip r" onclick="sc(this,'rxctrl')">Sin cambios — evaluar retratamiento</div>
+            <div class="chip r" onclick="sc(this,'rxctrl')">Lesión aumentó — interconsulta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="card-h"><div class="card-ico">📊</div><h3>Resumen del caso</h3></div>
+      <div class="card-b" id="res-body"><p style="color:var(--txt2);font-size:13px">Completa las secciones para ver el resumen.</p></div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn btn-gen" onclick="generarPDF()">📄 Generar PDF completo</button>
+      <p style="text-align:center;font-size:11.5px;color:var(--txt2);margin-top:6px">Se descarga automáticamente con todos los datos</p>
+    </div>
+  </div>
+
+  <!-- BOTONES NAV -->
+  <div class="nav-btns">
+    <button class="btn btn-prev" id="btn-prev" onclick="navS(-1)" style="display:none">← Anterior</button>
+    <button class="btn btn-next" id="btn-next" onclick="navS(1)">Siguiente →</button>
+  </div>
+</main>
+</div>
+
+<script>
+// ── DATOS DIENTES ──
+const DT={
+  '1.1':{n:'Incisivo central sup. derecho',c:['Único'],t:'Uniradicular'},
+  '1.2':{n:'Incisivo lateral sup. derecho',c:['Único'],t:'Uniradicular'},
+  '1.3':{n:'Canino superior derecho',c:['Único'],t:'Uniradicular'},
+  '1.4':{n:'1er premolar sup. derecho',c:['Vestibular','Palatino'],t:'2 conductos habituales'},
+  '1.5':{n:'2do premolar sup. derecho',c:['Único'],t:'Generalmente uniradicular'},
+  '1.6':{n:'1er molar superior derecho',c:['MV1','MV2','DV','Palatino'],t:'3–4 conductos — MV2 hasta 60%'},
+  '1.7':{n:'2do molar superior derecho',c:['MV','DV','Palatino'],t:'3 conductos habituales'},
+  '1.8':{n:'3er molar superior derecho',c:['Var1','Var2','Var3'],t:'1–4 conductos, muy variable'},
+  '2.1':{n:'Incisivo central sup. izquierdo',c:['Único'],t:'Uniradicular'},
+  '2.2':{n:'Incisivo lateral sup. izquierdo',c:['Único'],t:'Uniradicular'},
+  '2.3':{n:'Canino superior izquierdo',c:['Único'],t:'Uniradicular'},
+  '2.4':{n:'1er premolar sup. izquierdo',c:['Vestibular','Palatino'],t:'2 conductos habituales'},
+  '2.5':{n:'2do premolar sup. izquierdo',c:['Único'],t:'Generalmente uniradicular'},
+  '2.6':{n:'1er molar superior izquierdo',c:['MV1','MV2','DV','Palatino'],t:'3–4 conductos — MV2 hasta 60%'},
+  '2.7':{n:'2do molar superior izquierdo',c:['MV','DV','Palatino'],t:'3 conductos habituales'},
+  '2.8':{n:'3er molar superior izquierdo',c:['Var1','Var2','Var3'],t:'1–4 conductos, muy variable'},
+  '3.1':{n:'Incisivo central inf. izquierdo',c:['Vestibular','Lingual'],t:'Bifurcación frecuente 40%'},
+  '3.2':{n:'Incisivo lateral inf. izquierdo',c:['Vestibular','Lingual'],t:'Posible bifurcación'},
+  '3.3':{n:'Canino inferior izquierdo',c:['Único'],t:'Uniradicular'},
+  '3.4':{n:'1er premolar inf. izquierdo',c:['Único'],t:'Uniradicular'},
+  '3.5':{n:'2do premolar inf. izquierdo',c:['Único'],t:'Uniradicular'},
+  '3.6':{n:'1er molar inferior izquierdo',c:['ML','MV','D1','D2'],t:'3–4 conductos — D2 frecuente'},
+  '3.7':{n:'2do molar inferior izquierdo',c:['ML','MV','Distal'],t:'3 conductos habituales'},
+  '3.8':{n:'3er molar inferior izquierdo',c:['Var1','Var2','Var3','Var4','Var5'],t:'1–5 conductos, muy variable'},
+  '4.1':{n:'Incisivo central inf. derecho',c:['Vestibular','Lingual'],t:'Bifurcación frecuente 40%'},
+  '4.2':{n:'Incisivo lateral inf. derecho',c:['Vestibular','Lingual'],t:'Posible bifurcación'},
+  '4.3':{n:'Canino inferior derecho',c:['Único'],t:'Uniradicular'},
+  '4.4':{n:'1er premolar inf. derecho',c:['Único'],t:'Uniradicular'},
+  '4.5':{n:'2do premolar inf. derecho',c:['Único'],t:'Uniradicular'},
+  '4.6':{n:'1er molar inferior derecho',c:['ML','MV','D1','D2'],t:'3–4 conductos — D2 frecuente'},
+  '4.7':{n:'2do molar inferior derecho',c:['ML','MV','Distal'],t:'3 conductos habituales'},
+  '4.8':{n:'3er molar inferior derecho',c:['Var1','Var2','Var3','Var4','Var5'],t:'1–5 conductos, muy variable'},
+};
+
+// ── SECCIONES ──
+const SECS=[
+  {id:'s0',lbl:'Datos del paciente',ico:'👤'},
+  {id:'s1',lbl:'Anamnesis',ico:'📋'},
+  {id:'s2',lbl:'Antecedentes médicos',ico:'⚕️'},
+  {id:'s3',lbl:'Examen clínico',ico:'🔬'},
+  {id:'s4',lbl:'Radiografía',ico:'📡'},
+  {id:'s5',lbl:'Diagnóstico',ico:'🎯'},
+  {id:'s6',lbl:'Plan de tratamiento',ico:'📝'},
+  {id:'s7',lbl:'Evoluciones',ico:'🔩'},
+  {id:'s8',lbl:'Control y resumen',ico:'✅'},
+];
+let cur=0, dSel=null;
+
+function buildNav(){
+  const tpl=SECS.map((s,i)=>`<div class="nav-i ${i===0?'on':''}" id="ni${i}" onclick="goSec(${i})"><div class="nb">${i+1}</div><span>${s.lbl}</span></div>`).join('');
+  document.getElementById('desk-nav').innerHTML=tpl;
+  document.getElementById('mob-nav-list').innerHTML=tpl.replace(/onclick="goSec/g,'onclick="toggleMenu();goSec');
+}
+
+function goSec(n){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('vis'));
+  document.getElementById(SECS[n].id).classList.add('vis');
+  document.querySelectorAll('.nav-i').forEach((el,i)=>el.classList.toggle('on',i===n));
+  document.getElementById('step-titulo').textContent=SECS[n].lbl;
+  document.getElementById('step-ico').textContent=SECS[n].ico;
+  document.getElementById('tb-titulo').textContent=SECS[n].lbl;
+  document.getElementById('btn-prev').style.display=n===0?'none':'';
+  document.getElementById('btn-next').textContent=n===SECS.length-1?'Ver resumen →':'Siguiente →';
+  cur=n; upProg(); if(n===8)buildRes(); window.scrollTo(0,0);
+}
+function navS(d){goSec(Math.max(0,Math.min(SECS.length-1,cur+d)));}
+function toggleMenu(){document.getElementById('mob-nav').classList.toggle('open');}
+
+// ── CHIPS ──
+function sc(el,id,multi=false){
+  const p=document.getElementById(id);if(!p)return;
+  if(!multi)p.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.toggle('on'); upProg();
+}
+function gc(id){const el=document.getElementById(id);if(!el)return[];return[...el.querySelectorAll('.chip.on')].map(c=>c.textContent.trim());}
+
+// ── EVA ──
+function sev(btn){document.querySelectorAll('.ev').forEach(b=>b.classList.remove('on'));btn.classList.add('on');upProg();}
+function geva(){const s=document.querySelector('.ev.on');return s?s.dataset.v:'';}
+
+// ── ODONTOGRAMA ──
+function buildOd(){
+  const sup=['1.8','1.7','1.6','1.5','1.4','1.3','1.2','1.1','2.1','2.2','2.3','2.4','2.5','2.6','2.7','2.8'];
+  const inf=['4.8','4.7','4.6','4.5','4.4','4.3','4.2','4.1','3.1','3.2','3.3','3.4','3.5','3.6','3.7','3.8'];
+  document.getElementById('sup').innerHTML=sup.map(d=>`<div class="dt" id="d${d.replace('.','_')}" onclick="selD('${d}')">${d}</div>`).join('');
+  document.getElementById('inf').innerHTML=inf.map(d=>`<div class="dt" id="d${d.replace('.','_')}" onclick="selD('${d}')">${d}</div>`).join('');
+}
+function selD(d){
+  document.querySelectorAll('.dt').forEach(el=>el.classList.remove('on'));
+  document.getElementById('d'+d.replace('.','_')).classList.add('on');
+  dSel=d; const dt=DT[d];
+  const info=document.getElementById('dtinfo');
+  if(dt){info.innerHTML=`<strong>🦷 ${d} — ${dt.n}</strong><span>${dt.t} | ${dt.c.length} conducto(s): ${dt.c.join(', ')}</span>`;info.classList.add('vis');buildSes(dt.c,d);}
+  upProg();
+}
+
+// ── SESIONES ──
+const LIMAS=['#10','#15','#20','#25','#30','#35','#40','#45','#50','#55','#60'];
+const TAPERS=['/.02','/.04','/.06','/.08'];
+
+function buildCond(nom,si,ci){
+  const p=s=>`s${si}c${ci}_${s}`;
+  return`<div class="cond-card">
+    <div class="cond-h"><h4>Conducto ${ci+1}: ${nom}</h4></div>
+    <div class="cond-b">
+      <div class="g2">
+        <div class="f"><label>Long. trabajo (localizador Apex ID)</label><input type="text" id="${p('lt')}" placeholder="Ej: 20.5mm"></div>
+        <div class="f"><label>Confirmación apical</label>
+          <div class="chips" id="${p('conf')}"><div class="chip v" onclick="sc(this,'${p('conf')}')">Localizador ✓</div><div class="chip" onclick="sc(this,'${p('conf')}')">Rx ✓</div><div class="chip" onclick="sc(this,'${p('conf')}')">Ambos</div></div>
+        </div>
+      </div>
+      <div class="cg"><label>Lima apical maestra (LAM)</label>
+        <div class="limas" id="${p('lam')}">${LIMAS.map(l=>`<button class="lb" onclick="selL(this,'${p('lam')}')">${l}</button>`).join('')}</div>
+      </div>
+      <div class="g2">
+        <div class="cg"><label>Taper</label>
+          <div class="chips" id="${p('tap')}">${TAPERS.map(t=>`<div class="chip" onclick="sc(this,'${p('tap')}')">${t}</div>`).join('')}</div>
+        </div>
+        <div class="cg"><label>Técnica preparación</label>
+          <div class="chips" id="${p('tec')}"><div class="chip" onclick="sc(this,'${p('tec')}')">Rotatoria</div><div class="chip" onclick="sc(this,'${p('tec')}')">Reciprocante</div><div class="chip" onclick="sc(this,'${p('tec')}')">Manual</div></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="cg"><label>Rx conductometría</label>
+          <div class="chips" id="${p('rx')}"><div class="chip v" onclick="sc(this,'${p('rx')}')">Tomada ✓</div><div class="chip" onclick="sc(this,'${p('rx')}')">No tomada</div></div>
+        </div>
+        <div class="f"><label>Observaciones del conducto</label><input type="text" id="${p('obs')}" placeholder="Curvatura, calcificación..."></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildSesPanel(si,conds){
+  return`<div style="margin-bottom:16px">
+    <div class="g2" style="margin-bottom:12px">
+      <div class="f"><label>Fecha</label><input type="date" id="s${si}_f"></div>
+      <div class="f"><label>Hora</label><input type="time" id="s${si}_h"></div>
+    </div>
+    <div class="f" style="margin-bottom:12px"><label>Anestesia administrada</label><input type="text" id="s${si}_an" placeholder="Ej: Infiltrativa + bloqueo nervio dentario inf. Septocaine 4%"></div>
+    ${conds.map((c,ci)=>buildCond(c,si,ci)).join('')}
+    <div class="cg" style="margin-bottom:10px"><label>Irrigación (marcar todos los usados)</label>
+      <div class="chips" id="s${si}_irr">
+        <div class="chip" onclick="sc(this,'s${si}_irr',1)">NaOCl 2.5%</div>
+        <div class="chip" onclick="sc(this,'s${si}_irr',1)">NaOCl 5.25%</div>
+        <div class="chip" onclick="sc(this,'s${si}_irr',1)">EDTA 17%</div>
+        <div class="chip" onclick="sc(this,'s${si}_irr',1)">CHX 2%</div>
+        <div class="chip" onclick="sc(this,'s${si}_irr',1)">QMix</div>
+        <div class="chip" onclick="sc(this,'s${si}_irr',1)">Suero fisiológico</div>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="cg"><label>Medicación intraconducto</label>
+        <div class="chips" id="s${si}_med">
+          <div class="chip" onclick="sc(this,'s${si}_med')">Hidróxido de calcio</div>
+          <div class="chip" onclick="sc(this,'s${si}_med')">Ca(OH)₂+CHX</div>
+          <div class="chip" onclick="sc(this,'s${si}_med')">MTA</div>
+          <div class="chip v" onclick="sc(this,'s${si}_med')">Sin medicación</div>
+        </div>
+      </div>
+      <div class="cg"><label>Restauración provisional</label>
+        <div class="chips" id="s${si}_prov">
+          <div class="chip" onclick="sc(this,'s${si}_prov')">Cavit</div>
+          <div class="chip" onclick="sc(this,'s${si}_prov')">IRM</div>
+          <div class="chip" onclick="sc(this,'s${si}_prov')">Ionómero</div>
+          <div class="chip" onclick="sc(this,'s${si}_prov')">Resina provisional</div>
+        </div>
+      </div>
+    </div>
+    <div class="cg" style="margin-bottom:10px"><label>Resultado</label>
+      <div class="chips" id="s${si}_res">
+        <div class="chip v" onclick="sc(this,'s${si}_res',1)">Sin complicaciones</div>
+        <div class="chip r" onclick="sc(this,'s${si}_res',1)">Instrumento fracturado</div>
+        <div class="chip r" onclick="sc(this,'s${si}_res',1)">Perforación</div>
+        <div class="chip r" onclick="sc(this,'s${si}_res',1)">Sangrado abundante</div>
+        <div class="chip a" onclick="sc(this,'s${si}_res',1)">Sesión suspendida</div>
+      </div>
+    </div>
+    <div class="cg" style="margin-bottom:10px"><label>Rx obturación</label>
+      <div class="chips" id="s${si}_rxob">
+        <div class="chip v" onclick="sc(this,'s${si}_rxob')">Tomada y aceptable</div>
+        <div class="chip a" onclick="sc(this,'s${si}_rxob')">Subobturación</div>
+        <div class="chip r" onclick="sc(this,'s${si}_rxob')">Sobreobturación</div>
+        <div class="chip" onclick="sc(this,'s${si}_rxob')">No tomada</div>
+      </div>
+    </div>
+    <div class="f" style="margin-bottom:10px">
+      <label>Evolución clínica en prosa — Res. 1995/1999 <span class="badge-ia">⚡ IA desde audio</span></label>
+      <textarea id="s${si}_ev" style="min-height:90px" placeholder="Esta sección se genera automáticamente desde el audio dictado mediante Whisper + Claude AI..."></textarea>
+    </div>
+    <div class="f"><label>Próxima cita / indicaciones</label><input type="text" id="s${si}_prox" placeholder="Ej: En 15 días para segunda sesión"></div>
+  </div>`;
+}
+
+function buildSes(conds, d){
+  const panels=document.getElementById('ses-panels');
+  panels.innerHTML=[0,1,2,3].map(si=>`<div class="ses-p ${si===0?'vis':''}" id="sp${si}">
+    <p style="font-size:12px;color:var(--txt2);margin-bottom:10px">Diente ${d} — ${DT[d].n}</p>
+    ${buildSesPanel(si,conds)}
+  </div>`).join('');
+}
+
+function selL(btn,id){document.getElementById(id).querySelectorAll('.lb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+function showSes(i){document.querySelectorAll('.ses-tab').forEach((t,ti)=>t.classList.toggle('on',ti===i));document.querySelectorAll('.ses-p').forEach((p,pi)=>p.classList.toggle('vis',pi===i));}
+
+// ── PROGRESO ──
+function upProg(){
+  const gs=['tdolor','ddolor','pv','ph','pa','pfr','dxp','dxpe','nses','pron','cons'];
+  let c=gs.filter(g=>gc(g).length>0).length;
+  ['nombre','doc','fecha','motivo'].forEach(id=>{const el=document.getElementById(id);if(el&&el.value.trim())c++;});
+  if(dSel)c++;if(geva())c++;
+  const t=gs.length+4+2;
+  document.getElementById('prog').style.width=Math.min(Math.round(c/t*100),100)+'%';
+}
+
+// ── RESUMEN ──
+function gv(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+function buildRes(){
+  const dt=dSel?DT[dSel]:null;
+  document.getElementById('res-body').innerHTML=`
+    <div class="res-card"><h4>Paciente</h4>
+      <div class="res-i"><span>Nombre:</span><span>${gv('nombre')||'—'}</span></div>
+      <div class="res-i"><span>Documento:</span><span>${gv('doc')||'—'}</span></div>
+      <div class="res-i"><span>Fecha consulta:</span><span>${gv('fecha')||'—'}</span></div>
+    </div>
+    <div class="res-card"><h4>Diente y diagnóstico</h4>
+      <div class="res-i"><span>Diente:</span><span>${dSel?dSel+' — '+dt.n:'—'}</span></div>
+      <div class="res-i"><span>Conductos:</span><span>${dt?dt.c.join(', '):'—'}</span></div>
+      <div class="res-i"><span>Dx pulpar:</span><span>${gc('dxp').join(', ')||'—'}</span></div>
+      <div class="res-i"><span>Dx periapical:</span><span>${gc('dxpe').join(', ')||'—'}</span></div>
+    </div>
+    <div class="res-card"><h4>Plan</h4>
+      <div class="res-i"><span>Sesiones:</span><span>${gc('nses').join('')||'—'}</span></div>
+      <div class="res-i"><span>Técnica:</span><span>${gc('tec').join('')||'—'}</span></div>
+      <div class="res-i"><span>Pronóstico:</span><span>${gc('pron').join('')||'—'}</span></div>
+    </div>`;
+}
+
+// ── GENERAR PDF ──
+function generarPDF(){
+  buildRes();
+  if(!window.jspdf){
+    alert('Necesitas conexión a internet para generar el PDF por primera vez.\n\nSi ya tienes internet, recarga la página e intenta de nuevo.');
+    return;
+  }
+  const btn=document.querySelector('.btn-gen');
+  btn.textContent='⏳ Generando PDF...';
+  btn.disabled=true;
+  // Pequeño delay para que el navegador actualice el botón antes de procesar
+  setTimeout(()=>{
+    try{
+      _doPDF();
+    }catch(e){
+      console.error(e);
+      alert('Error al generar el PDF: '+e.message);
+    }finally{
+      btn.textContent='📄 Generar PDF completo';
+      btn.disabled=false;
+    }
+  },80);
+}
+
+function _doPDF(){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'p',unit:'mm',format:'a4'});
+  const ML=10, AW=190;
+  let y=12;
+
+  // helpers con colores como arrays RGB
+  const C={
+    azul:[10,61,98], azulm:[26,111,168], azulc:[212,234,247],
+    verde:[30,126,78], rojo:[192,57,43], ambar:[214,137,16],
+    gris:[244,246,248], grism:[90,112,128], negro:[26,38,51],
+    blanco:[255,255,255], amarillopal:[255,248,225], rojopal:[253,236,234]
+  };
+
+  function setFill(arr){doc.setFillColor(arr[0],arr[1],arr[2]);}
+  function setTxt(arr){doc.setTextColor(arr[0],arr[1],arr[2]);}
+  function setDraw(arr){doc.setDrawColor(arr[0],arr[1],arr[2]);}
+
+  function chk(h=10){if(y+h>282){doc.addPage();y=12;}}
+
+  function encabezado(){
+    setFill(C.azul); doc.roundedRect(ML,y,AW,18,3,3,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); setTxt(C.blanco);
+    doc.text('HISTORIA CLÍNICA ENDODÓNTICA',ML+AW/2,y+7,{align:'center'});
+    doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text('Dr. Camilo — Odontología General | Bogotá D.C. | Res. 1995/1999 Ministerio de Salud',ML+AW/2,y+13,{align:'center'});
+    y+=22;
+  }
+
+  function secH(num,tit){
+    chk(10); setFill(C.azulm); doc.roundedRect(ML,y,AW,8,2,2,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); setTxt(C.blanco);
+    doc.text(`${num} — ${tit}`,ML+4,y+5.5); y+=11;
+  }
+
+  function cmp(lbl,val,x,w){
+    doc.setFont('helvetica','bold'); doc.setFontSize(7); setTxt(C.azulm);
+    doc.text(String(lbl||''),x,y);
+    setFill(C.gris); doc.roundedRect(x,y+1,w,6,1,1,'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); setTxt(C.negro);
+    const txt=String(val||'').substring(0,Math.floor(w*1.7));
+    doc.text(txt,x+2,y+5.2);
+  }
+
+  function row2(l1,v1,l2,v2){chk(12);const w=AW/2-2;cmp(l1,v1,ML,w);cmp(l2,v2,ML+w+4,w);y+=11;}
+  function row3(l1,v1,l2,v2,l3,v3){chk(12);const w=AW/3-2;cmp(l1,v1,ML,w);cmp(l2,v2,ML+w+3,w);cmp(l3,v3,ML+(w+3)*2,w);y+=11;}
+
+  function area(lbl,val,h=16){
+    chk(h+6); doc.setFont('helvetica','bold'); doc.setFontSize(7); setTxt(C.azulm);
+    doc.text(String(lbl||''),ML,y); y+=3;
+    setFill(C.gris); doc.roundedRect(ML,y,AW,h,1,1,'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); setTxt(C.negro);
+    const lines=doc.splitTextToSize(String(val||''),AW-4);
+    doc.text(lines.slice(0,Math.floor(h/3.5)),ML+2,y+3.5);
+    y+=h+4;
+  }
+
+  function chips2(lbl,vals){
+    chk(12); doc.setFont('helvetica','bold'); doc.setFontSize(7); setTxt(C.azulm);
+    doc.text(String(lbl||''),ML,y); y+=4;
+    let x=ML;
+    (vals||[]).forEach(val=>{
+      const tw=doc.getTextWidth(String(val))+6;
+      if(x+tw>ML+AW){x=ML;y+=6;chk(6);}
+      setFill(C.azulm); doc.roundedRect(x,y,tw,5,1.5,1.5,'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(7); setTxt(C.blanco);
+      doc.text(String(val),x+3,y+3.6); x+=tw+3;
+    });
+    y+=8;
+  }
+
+  function linea(){chk(4);setDraw(C.azulc);doc.setLineWidth(0.3);doc.line(ML,y,ML+AW,y);y+=4;}
+
+  // ── CONSTRUIR PDF ──
+  encabezado();
+
+  secH('01','Datos del paciente');
+  cmp('Nombre completo:',gv('nombre'),ML,AW); y+=11;
+  row3('Documento:',gv('doc'),'Fecha consulta:',gv('fecha'),'Edad:',gv('edad'));
+  row3('Fecha nacimiento:',gv('fnac'),'Teléfono:',gv('tel'),'Correo:',gv('correo'));
+  y+=2;
+
+  secH('02','Anamnesis');
+  area('Motivo de consulta:',gv('motivo'),14);
+  chips2('Tipo de dolor:',gc('tdolor'));
+  if(geva())chips2('Intensidad EVA:',['EVA '+geva()+'/10']);
+  chips2('Duración del dolor:',gc('ddolor'));
+  chips2('Factores que alivian:',gc('alivio'));
+  chips2('Tratamientos previos:',gc('tprev'));
+  row2('Medicamentos actuales:',gv('meds'),'Alergias:',gc('alergia').join(', '));
+  y+=2;
+
+  secH('03','Antecedentes médicos');
+  chips2('Enfermedades sistémicas:',gc('enfsist'));
+  chips2('Anticoagulantes:',gc('anticoa'));
+  chips2('Embarazo:',gc('embar'));
+  chips2('Estado inmunológico:',gc('inmuno'));
+  if(gv('obs-ant'))area('Observaciones:',gv('obs-ant'),10);
+
+  secH('04','Examen clínico');
+  const dtd=dSel?DT[dSel]:null;
+  if(dSel&&dtd){
+    chk(12); setFill(C.azulm); doc.roundedRect(ML,y,AW,10,2,2,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(11); setTxt(C.blanco);
+    doc.text('Diente '+dSel,ML+5,y+6.5);
+    doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text(dtd.n+' — '+dtd.t,ML+26,y+6.5); y+=13;
+  }
+  chips2('Color corona:',gc('color'));
+  chips2('Fractura:',gc('frac'));
+  chips2('Fístula/absceso:',gc('fist'));
+  chips2('Examen extraoral:',gc('extrao'));
+  row2('Restauraciones previas:',gv('rest'),'Caries:',gv('caries'));
+  const pxs=[['Percusión vertical',gc('pv')],['Percusión horizontal',gc('ph')],
+    ['Palpación apical',gc('pa')],['Prueba de frío',gc('pfr')],
+    ['Localizador apical',gc('lap')],['Movilidad',gc('mov')],['Sondaje',gc('son')]];
+  chk(8); doc.setFont('helvetica','bold'); doc.setFontSize(7); setTxt(C.azulm);
+  doc.text('Pruebas diagnósticas:',ML,y); y+=4;
+  pxs.forEach(([lbl,vals])=>{
+    chk(7); setFill(C.gris); doc.rect(ML,y,48,6,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(6.5); setTxt(C.grism);
+    doc.text(String(lbl),ML+2,y+4);
+    setFill(C.blanco); doc.rect(ML+48,y,AW-48,6,'F');
+    doc.setFont('helvetica','normal'); setTxt(C.negro);
+    doc.text((vals||[]).join(' | ')||'—',ML+50,y+4);
+    setDraw(C.azulc); doc.setLineWidth(0.2); doc.rect(ML,y,AW,6); y+=6;
+  });
+  y+=4;
+
+  secH('05','Interpretación radiográfica');
+  row2('Tipo Rx:',gv('tipo-rx'),'Longitud estimada:',gv('long-est'));
+  chips2('Conductos en Rx:',gc('ncond'));
+  chips2('Estado periapical:',gc('eperiap'));
+  area('Descripción radiográfica:',gv('desc-rx'),14);
+
+  secH('06','Diagnóstico (AAE)');
+  const dp=gc('dxp').join(', ')||'—', dpe=gc('dxpe').join(', ')||'—';
+  const hw=AW/2-2;
+  chk(18);
+  setFill(C.amarillopal); setDraw(C.ambar); doc.setLineWidth(0.5);
+  doc.roundedRect(ML,y,hw,14,2,2,'FD');
+  doc.setFont('helvetica','bold'); doc.setFontSize(7); setTxt(C.ambar);
+  doc.text('DIAGNÓSTICO PULPAR',ML+3,y+4.5);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); setTxt(C.negro);
+  doc.text(doc.splitTextToSize(dp,hw-4),ML+3,y+9);
+  setFill(C.rojopal); setDraw(C.rojo);
+  doc.roundedRect(ML+hw+4,y,hw,14,2,2,'FD');
+  doc.setFont('helvetica','bold'); doc.setFontSize(7); setTxt(C.rojo);
+  doc.text('DIAGNÓSTICO PERIAPICAL',ML+hw+7,y+4.5);
+  doc.setFont('helvetica','normal'); doc.setFontSize(8); setTxt(C.negro);
+  doc.text(doc.splitTextToSize(dpe,hw-4),ML+hw+7,y+9);
+  y+=18;
+
+  secH('07','Plan de tratamiento');
+  chips2('Sesiones estimadas:',gc('nses'));
+  chips2('Técnica obturación:',gc('tec'));
+  chips2('Pronóstico:',gc('pron'));
+  chips2('Consentimiento:',gc('cons'));
+  y+=2;
+
+  // Sesiones
+  for(let si=0;si<4;si++){
+    const f=gv('s'+si+'_f'),h=gv('s'+si+'_h'),an=gv('s'+si+'_an'),ev=gv('s'+si+'_ev');
+    if(!f&&!an&&!ev)continue;
+    secH('08.'+`${si+1}`,'Sesión '+(si+1)+' de tratamiento');
+    row3('Fecha:',f,'Hora:',h,'Anestesia:',an);
+    if(dSel&&dtd){
+      dtd.c.forEach((cn,ci)=>{
+        const p=s=>`s${si}c${ci}_${s}`;
+        const lt=gv(p('lt'));
+        const lamEl=document.querySelector('#'+CSS.escape(p('lam'))+' .lb.on');
+        const lam=lamEl?lamEl.textContent.trim():'—';
+        const tap=gc(p('tap')).join('')||'—';
+        const tec=gc(p('tec')).join('')||'—';
+        const conf=gc(p('conf')).join('')||'—';
+        const rxc=gc(p('rx')).join('')||'—';
+        const obs=gv(p('obs'));
+        if(!lt&&lam==='—')return;
+        chk(22);
+        setFill(C.azulc); doc.roundedRect(ML,y,AW,7,1.5,1.5,'F');
+        doc.setFont('helvetica','bold'); doc.setFontSize(8); setTxt(C.azul);
+        doc.text('Conducto '+(ci+1)+': '+cn,ML+4,y+4.8); y+=9;
+        const w4=AW/4-2;
+        cmp('Long. trabajo:',lt,ML,w4);
+        cmp('LAM:',lam,ML+w4+3,w4);
+        cmp('Taper:',tap,ML+(w4+3)*2,w4);
+        cmp('Técnica:',tec,ML+(w4+3)*3,w4);
+        y+=11;
+        row2('Confirmación apical:',conf,'Rx conductometría:',rxc);
+        if(obs){cmp('Observaciones:',obs,ML,AW);y+=11;}
+      });
+    }
+    chips2('Irrigación:',gc('s'+si+'_irr'));
+    chips2('Medicación:',gc('s'+si+'_med'));
+    chips2('Provisional:',gc('s'+si+'_prov'));
+    chips2('Resultado:',gc('s'+si+'_res'));
+    area('Evolución clínica (Res. 1995/1999):',ev,22);
+    if(gv('s'+si+'_prox')){cmp('Próxima cita:',gv('s'+si+'_prox'),ML,AW);y+=11;}
+    y+=3;
+  }
+
+  secH('09','Control post-tratamiento');
+  row2('Fecha control:',gv('fctrl'),'Alta/seguimiento:',gv('alta'));
+  chips2('Rx de control:',gc('rxctrl'));
+  y+=6;
+
+  // Firmas
+  chk(30); setDraw(C.azul); doc.setLineWidth(0.4); doc.line(ML,y,ML+AW,y); y+=8;
+  const fw=AW/3;
+  [[' Dr. Camilo','Odontólogo','Reg. TP-XXXXXXX'],
+   [' Firma del paciente','C.C.: _____________','Fecha: ____________'],
+   [' Acompañante (si aplica)','Nombre: ___________','C.C.: _____________']
+  ].forEach((ls,i)=>{
+    const fx=ML+i*fw;
+    setDraw(C.grism); doc.setLineWidth(0.3); doc.line(fx+4,y+8,fx+fw-4,y+8);
+    ls.forEach((l,li)=>{
+      doc.setFont('helvetica',li===0?'bold':'normal');
+      doc.setFontSize(li===0?8:7);
+      setTxt(li===0?C.azul:C.grism);
+      doc.text(l,fx+fw/2,y+12+li*4.5,{align:'center'});
+    });
+  });
+  y+=28;
+
+  // Nota legal
+  chk(8); doc.setFont('helvetica','italic'); doc.setFontSize(6.5); setTxt(C.grism);
+  doc.text(doc.splitTextToSize('Documento confidencial — Ley 23/1981, Res. 1995/1999 y Res. 2003/2014 Ministerio de Salud y Protección Social de Colombia.',AW),ML+AW/2,y,{align:'center'});
+
+  // Paginación
+  const total=doc.getNumberOfPages();
+  for(let i=1;i<=total;i++){
+    doc.setPage(i); doc.setFont('helvetica','normal'); doc.setFontSize(7); setTxt(C.grism);
+    doc.text('Pág. '+i+' de '+total,ML+AW,287,{align:'right'});
+    doc.text('HCE — Dr. Camilo — Bogotá D.C.',ML,287);
+  }
+
+  const nom=gv('nombre')||'paciente';
+  const fec=gv('fecha')||new Date().toISOString().slice(0,10);
+  const fileName='HCE_'+nom.replace(/\s+/g,'_')+'_'+fec+'.pdf';
+
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+
+  if(isIOS){
+    // iOS Safari: convertir a base64 y abrir directamente
+    // Safari muestra visor nativo de PDF con botón compartir integrado
+    const pdfBase64=doc.output('datauristring');
+    // Abrir el PDF directamente — Safari lo muestra en su visor nativo
+    // El usuario puede usar el botón ↑ para guardar en archivos
+    window.open(pdfBase64,'_blank');
+  } else {
+    // Chrome, Android, Firefox, Desktop — descarga directa con blob
+    const pdfBlob=doc.output('blob');
+    const blobURL=URL.createObjectURL(pdfBlob);
+    const link=document.createElement('a');
+    link.href=blobURL;
+    link.download=fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(blobURL),3000);
+  }
+}
+
+// ── INIT ──
+buildNav();
+buildOd();
+buildSes(['Conducto 1','Conducto 2','Conducto 3','Conducto 4'],'?');
+document.getElementById('btn-prev').style.display='none';
+</script>
+</body>
+</html>
