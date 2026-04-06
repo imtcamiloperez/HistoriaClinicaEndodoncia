@@ -653,13 +653,50 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
         <!-- FIRMA DIGITAL CANVAS -->
         <div style="margin-bottom:14px">
-          <p style="font-size:11px;font-weight:700;color:var(--azul-m);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">✍️ Firma digital del paciente</p>
-          <p style="font-size:12px;color:var(--txt2);margin-bottom:8px">Firme con el dedo (móvil) o con el mouse (computador) en el recuadro:</p>
+          <p style="font-size:11px;font-weight:700;color:var(--azul-m);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">✍️ Firma digital del paciente</p>
+          <p style="font-size:12px;color:var(--txt2);margin-bottom:8px">Firma en el recuadro o toca el botón para ampliar a pantalla completa:</p>
           <div style="position:relative;border:2px solid var(--azul-m);border-radius:10px;background:#fff;overflow:hidden">
-            <canvas id="firma-canvas" style="display:block;width:100%;touch-action:none" height="150"></canvas>
-            <button onclick="limpiarFirma()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.12);border:none;color:#333;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">✕ Limpiar</button>
+            <canvas id="firma-canvas" style="display:block;width:100%;touch-action:none" height="130"></canvas>
+            <div style="position:absolute;top:6px;right:6px;display:flex;gap:5px">
+              <button onclick="abrirFirmaFullscreen()" title="Pantalla completa" style="background:var(--azul-m);border:none;color:#fff;border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:600">⛶ Ampliar</button>
+              <button onclick="limpiarFirma()" style="background:rgba(0,0,0,.12);border:none;color:#333;border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer">✕</button>
+            </div>
           </div>
-          <p id="firma-status" style="font-size:11px;color:var(--txt2);margin-top:4px;text-align:center">Sin firma</p>
+          <p id="firma-status" style="font-size:11px;color:var(--txt2);margin-top:5px;text-align:center">Sin firma — toca "Ampliar" para firmar en pantalla completa</p>
+        </div>
+
+        <!-- MODAL FIRMA FULLSCREEN -->
+        <div id="firma-fullscreen" style="display:none;position:fixed;inset:0;z-index:10000;background:#0a3d62;flex-direction:column">
+
+          <!-- Header -->
+          <div style="background:#0a3d62;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+            <div style="flex:1">
+              <p style="color:#fff;font-size:15px;font-weight:700;margin:0">✍️ Firma del paciente</p>
+              <p style="color:rgba(255,255,255,.6);font-size:11px;margin:0">Firme con el dedo en el área blanca</p>
+            </div>
+            <button onclick="limpiarFirmaFS()" style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600">🗑 Borrar</button>
+          </div>
+
+          <!-- Canvas area -->
+          <div style="flex:1;display:flex;flex-direction:column;padding:10px;gap:10px;min-height:0">
+            <div style="background:#fff;border-radius:12px;flex:1;position:relative;overflow:hidden">
+              <canvas id="firma-canvas-fs" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair"></canvas>
+              <!-- Línea guía -->
+              <div style="position:absolute;bottom:30%;left:10%;right:10%;height:1px;background:rgba(26,111,168,.2);pointer-events:none"></div>
+              <p style="position:absolute;bottom:calc(30% - 18px);left:50%;transform:translateX(-50%);font-size:11px;color:rgba(26,111,168,.4);pointer-events:none;white-space:nowrap">Firme aquí</p>
+              <!-- Indicador sin firma -->
+              <div id="fs-hint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;pointer-events:none">
+                <span style="font-size:48px;opacity:.15">✍️</span>
+                <p style="font-size:14px;color:rgba(0,0,0,.2);font-weight:600">Toca aquí para firmar</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer botones -->
+          <div style="background:#0a3d62;padding:14px 16px;display:flex;gap:10px;flex-shrink:0">
+            <button onclick="cancelarFirmaFS()" style="flex:1;padding:13px;background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">✕ Cancelar</button>
+            <button onclick="guardarFirmaFS()" style="flex:2;padding:13px;background:linear-gradient(135deg,#1e7e4e,#27ae60);border:none;color:#fff;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">✅ Guardar firma</button>
+          </div>
         </div>
 
         <!-- FOTO CÉDULA -->
@@ -1472,52 +1509,161 @@ function generarOTP(){
   document.getElementById('otp-input').value = '';
 }
 
-// Canvas de firma
+// Canvas de firma — versión inline (mini)
 function initCanvas(){
-  const canvas = document.getElementById('firma-canvas');
-  const ctx = canvas.getContext('2d');
-  // Ajustar resolución
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width * window.devicePixelRatio || 600;
-  canvas.height = 150 * window.devicePixelRatio || 150;
-  ctx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
-  ctx.strokeStyle = '#0a3d62';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
+  setupCanvas(document.getElementById('firma-canvas'), false);
+}
 
-  let drawing = false;
-  let lastX = 0, lastY = 0;
+// Canvas fullscreen
+let fsDrawing = false, fsCtx = null;
+
+function abrirFirmaFullscreen(){
+  const modal = document.getElementById('firma-fullscreen');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Intentar pantalla completa nativa
+  if(modal.requestFullscreen) modal.requestFullscreen().catch(()=>{});
+  else if(modal.webkitRequestFullscreen) modal.webkitRequestFullscreen();
+
+  setTimeout(()=>{
+    const canvas = document.getElementById('firma-canvas-fs');
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * (window.devicePixelRatio||1);
+    canvas.height = rect.height * (window.devicePixelRatio||1);
+    fsCtx = canvas.getContext('2d');
+    fsCtx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
+    fsCtx.strokeStyle = '#0a3d62';
+    fsCtx.lineWidth = 3;
+    fsCtx.lineCap = 'round';
+    fsCtx.lineJoin = 'round';
+
+    // Si ya había firma, copiarla
+    const mini = document.getElementById('firma-canvas');
+    if(firmaHecha && mini.width > 0){
+      fsCtx.drawImage(mini, 0, 0, rect.width, rect.height);
+      document.getElementById('fs-hint').style.display = 'none';
+    }
+
+    setupCanvas(canvas, true);
+  }, 100);
+}
+
+function setupCanvas(canvas, isFS){
+  const ctx = isFS ? fsCtx : canvas.getContext('2d');
+  if(!isFS){
+    const dpr = window.devicePixelRatio||1;
+    canvas.width = canvas.offsetWidth * dpr || 600;
+    canvas.height = 130 * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#0a3d62';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+  }
+
+  let drawing = false, lx = 0, ly = 0;
 
   function getPos(e){
     const r = canvas.getBoundingClientRect();
-    if(e.touches) return {x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top};
-    return {x: e.clientX - r.left, y: e.clientY - r.top};
+    const scaleX = canvas.width / (window.devicePixelRatio||1) / r.width;
+    const scaleY = canvas.height / (window.devicePixelRatio||1) / r.height;
+    if(e.touches){
+      return {
+        x: (e.touches[0].clientX - r.left) * scaleX,
+        y: (e.touches[0].clientY - r.top) * scaleY
+      };
+    }
+    return {
+      x: (e.clientX - r.left) * scaleX,
+      y: (e.clientY - r.top) * scaleY
+    };
   }
 
-  function start(e){ e.preventDefault(); drawing=true; const p=getPos(e); lastX=p.x; lastY=p.y; }
+  function start(e){
+    e.preventDefault();
+    drawing = true;
+    const p = getPos(e);
+    lx = p.x; ly = p.y;
+    // Ocultar hint
+    if(isFS) document.getElementById('fs-hint').style.display = 'none';
+  }
+
   function draw(e){
     e.preventDefault();
     if(!drawing) return;
-    const p=getPos(e);
+    const p = getPos(e);
     ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
+    ctx.moveTo(lx, ly);
     ctx.lineTo(p.x, p.y);
     ctx.stroke();
-    lastX=p.x; lastY=p.y;
-    firmaHecha = true;
-    document.getElementById('firma-status').textContent = '✅ Firma registrada';
-    document.getElementById('firma-status').style.color = 'var(--verde)';
-  }
-  function end(){ drawing=false; }
+    lx = p.x; ly = p.y;
 
-  canvas.addEventListener('mousedown', start);
-  canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', end);
-  canvas.addEventListener('mouseleave', end);
-  canvas.addEventListener('touchstart', start, {passive:false});
-  canvas.addEventListener('touchmove', draw, {passive:false});
-  canvas.addEventListener('touchend', end);
+    if(!isFS){
+      firmaHecha = true;
+      document.getElementById('firma-status').textContent = '✅ Firma registrada';
+      document.getElementById('firma-status').style.color = 'var(--verde)';
+    }
+  }
+
+  function end(){ drawing = false; }
+
+  // Remover listeners anteriores clonando
+  const newCanvas = canvas.cloneNode(true);
+  canvas.parentNode.replaceChild(newCanvas, canvas);
+  if(isFS){
+    // Reconectar ctx al nuevo canvas
+    fsCtx = newCanvas.getContext('2d');
+    const dpr = window.devicePixelRatio||1;
+    fsCtx.scale(dpr, dpr);
+    fsCtx.strokeStyle = '#0a3d62';
+    fsCtx.lineWidth = 3;
+    fsCtx.lineCap = 'round';
+    fsCtx.lineJoin = 'round';
+  }
+
+  newCanvas.addEventListener('mousedown', start);
+  newCanvas.addEventListener('mousemove', draw);
+  newCanvas.addEventListener('mouseup', end);
+  newCanvas.addEventListener('mouseleave', end);
+  newCanvas.addEventListener('touchstart', start, {passive:false});
+  newCanvas.addEventListener('touchmove', draw, {passive:false});
+  newCanvas.addEventListener('touchend', end);
+}
+
+function limpiarFirmaFS(){
+  const canvas = document.getElementById('firma-canvas-fs');
+  if(fsCtx) fsCtx.clearRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('fs-hint').style.display = 'flex';
+}
+
+function cancelarFirmaFS(){
+  cerrarFirmaFS();
+}
+
+function guardarFirmaFS(){
+  const canvasFS = document.getElementById('firma-canvas-fs');
+  const canvasMini = document.getElementById('firma-canvas');
+
+  // Copiar firma al canvas mini
+  const ctxMini = canvasMini.getContext('2d');
+  ctxMini.clearRect(0, 0, canvasMini.width, canvasMini.height);
+  const dpr = window.devicePixelRatio||1;
+  ctxMini.drawImage(canvasFS, 0, 0, canvasMini.width/dpr, canvasMini.height/dpr);
+
+  firmaHecha = true;
+  document.getElementById('firma-status').textContent = '✅ Firma guardada correctamente';
+  document.getElementById('firma-status').style.color = 'var(--verde)';
+
+  cerrarFirmaFS();
+}
+
+function cerrarFirmaFS(){
+  const modal = document.getElementById('firma-fullscreen');
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+  if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+  else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
 }
 
 function limpiarFirma(){
@@ -1525,7 +1671,7 @@ function limpiarFirma(){
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   firmaHecha = false;
-  document.getElementById('firma-status').textContent = 'Sin firma';
+  document.getElementById('firma-status').textContent = 'Sin firma — toca "Ampliar" para firmar en pantalla completa';
   document.getElementById('firma-status').style.color = 'var(--txt2)';
 }
 
