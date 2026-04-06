@@ -1073,53 +1073,76 @@ function _doPDF(){
 
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
 
-  // Generar el blob
+  // Generar el blob del PDF
   const pdfBlob = doc.output('blob');
+  const blobURL = URL.createObjectURL(pdfBlob);
 
   if(isIOS){
-    // iOS Safari no permite download ni window.open con blob/datauri
-    // Solución: mostrar modal con iframe embebido directo en la misma página
-    const reader = new FileReader();
-    reader.onloadend = function(){
-      const dataUri = reader.result;
-
-      // Crear modal overlay en la misma página (sin abrir nueva ventana)
-      const overlay = document.createElement('div');
-      overlay.id = 'pdf-overlay';
-      overlay.style.cssText = [
-        'position:fixed','inset:0','z-index:9999',
-        'background:#0a3d62','display:flex',
-        'flex-direction:column','overflow:hidden'
-      ].join(';');
-
-      overlay.innerHTML =
-        '<div style="background:#0a3d62;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0">' +
-          '<span style="color:#fff;font-size:14px;font-weight:700;flex:1">📄 '+fileName+'</span>' +
-          '<button onclick="document.getElementById(\'pdf-overlay\').remove()" ' +
-            'style="background:rgba(255,255,255,.2);border:none;color:#fff;' +
-            'border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer">✕ Cerrar</button>' +
-        '</div>' +
-        '<div style="background:#fff;border-radius:10px 10px 0 0;padding:10px 14px;' +
-          'font-size:12px;color:#0a3d62;text-align:center;font-weight:600;flex-shrink:0">' +
-          '↑ Toca el botón Compartir de Safari (abajo) → "Guardar en archivos"' +
-        '</div>' +
-        '<iframe src="'+dataUri+'" style="flex:1;border:none;width:100%;background:#fff"></iframe>';
-
-      document.body.appendChild(overlay);
-    };
-    reader.readAsDataURL(pdfBlob);
-
+    // iOS: usar Web Share API si está disponible (la más confiable en iPhone)
+    if(navigator.share && navigator.canShare){
+      const file = new File([pdfBlob], fileName, {type:'application/pdf'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({
+          files:[file],
+          title: fileName,
+          text: 'Historia Clínica Endodóntica — Dr. Camilo'
+        }).catch(err=>{
+          if(err.name!=='AbortError') mostrarOverlayPDF(blobURL, fileName);
+        });
+        return;
+      }
+    }
+    // Fallback: mostrar overlay con blob URL (funciona mejor que dataURI en Safari)
+    mostrarOverlayPDF(blobURL, fileName);
   } else {
     // Chrome, Android, Firefox, Desktop — descarga directa
-    const blobURL = URL.createObjectURL(pdfBlob);
     const link = document.createElement('a');
     link.href = blobURL;
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setTimeout(()=>URL.revokeObjectURL(blobURL), 3000);
+    setTimeout(()=>URL.revokeObjectURL(blobURL), 5000);
   }
+}
+
+function mostrarOverlayPDF(blobURL, fileName){
+  // Eliminar overlay anterior si existe
+  const prev = document.getElementById('pdf-overlay');
+  if(prev) prev.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'pdf-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#111;display:flex;flex-direction:column';
+
+  // Barra superior
+  const bar = document.createElement('div');
+  bar.style.cssText = 'background:#0a3d62;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;safe-area-inset-top:env(safe-area-inset-top)';
+  bar.innerHTML =
+    '<span style="color:#fff;font-size:13px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📄 '+fileName+'</span>'+
+    '<button id="pdf-close-btn" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">✕ Cerrar</button>';
+
+  // Instrucción
+  const hint = document.createElement('div');
+  hint.style.cssText = 'background:#1a6fa8;padding:8px 14px;text-align:center;font-size:12px;color:#fff;font-weight:600;flex-shrink:0';
+  hint.textContent = '↑ Toca Compartir en Safari → "Guardar en archivos" para guardar el PDF';
+
+  // Visor PDF usando <object> — más compatible con Safari iOS que iframe
+  const viewer = document.createElement('object');
+  viewer.data = blobURL;
+  viewer.type = 'application/pdf';
+  viewer.style.cssText = 'flex:1;width:100%;border:none;background:#fff;min-height:0';
+  viewer.innerHTML = '<p style="padding:20px;color:#333;text-align:center">Si no ves el PDF, toca Compartir ↑ → "Guardar en archivos"</p>';
+
+  overlay.appendChild(bar);
+  overlay.appendChild(hint);
+  overlay.appendChild(viewer);
+  document.body.appendChild(overlay);
+
+  document.getElementById('pdf-close-btn').onclick = function(){
+    overlay.remove();
+    URL.revokeObjectURL(blobURL);
+  };
 }
 
 // ── INIT ──
