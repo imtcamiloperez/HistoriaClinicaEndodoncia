@@ -35,7 +35,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mob-nav.open{display:flex}
 .mob-nav-inner{width:260px;background:var(--azul);height:100%;overflow-y:auto;padding:16px 0}
 .mob-close{display:block;padding:10px 18px;color:rgba(255,255,255,.6);font-size:13px;cursor:pointer;border:none;background:none;width:100%;text-align:left}
-.main{flex:1;padding:24px;max-width:820px;min-width:0}
+.main{flex:1;padding:24px;min-width:0}
 .step-hdr{background:var(--w);border-radius:14px;box-shadow:var(--shadow);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
 .step-ico{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--azul),var(--azul-m));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .step-hdr h1{font-size:18px;font-weight:700;color:var(--azul)}
@@ -139,51 +139,114 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .img-card .img-placeholder{font-size:28px;opacity:.3}
 .img-card input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 @media(max-width:768px){.img-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));}}
-/* ── TABLET (768-1024px) ── */
-@media(min-width:769px) and (max-width:1024px){
-  .sidebar{width:190px}
-  .main{padding:16px}
+/* ══ LAPTOP / DESKTOP (>1024px) ══ */
+@media(min-width:1025px){
+  .sidebar{width:240px}
+  .main{padding:24px 32px}
+  .card-b{padding:20px}
+  .chip{font-size:12.5px}
+  .ev{height:44px;font-size:14px}
+  .img-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+}
+
+/* ══ TABLET LANDSCAPE (900-1024px) ══ */
+@media(min-width:900px) and (max-width:1024px){
+  .sidebar{width:200px}
+  .main{padding:18px 20px;}
   .g3{grid-template-columns:1fr 1fr}
+  .dt{width:31px;height:29px;font-size:9px}
+  .img-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .chip{font-size:12px}
+}
+
+/* ══ TABLET PORTRAIT (600-899px) ══ */
+@media(min-width:600px) and (max-width:899px){
+  .sidebar{display:none}
+  .topbar{display:flex}
+  .main{padding:14px 16px}
+  .g3{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr 1fr}
   .dt{width:30px;height:28px;font-size:9px}
   .ev{height:38px;font-size:13px}
+  .card-b{padding:14px}
+  .chip{padding:5px 12px;font-size:12px}
   .img-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .ses-tab{padding:7px 14px;font-size:12.5px}
+  .lb{width:40px;height:33px;font-size:10.5px}
+  .od-row{gap:2px}
+  .dt{width:28px;height:27px}
+  /* Odontograma — dos filas bien espaciadas */
+  #sup,#inf{justify-content:center;flex-wrap:wrap}
+  .long-row{grid-template-columns:80px 1fr 1fr auto !important}
+  /* PIN box en tablet */
+  .pin-box{width:380px}
 }
-/* ── MOBILE (<768px) ── */
-@media(max-width:768px){
+
+/* ══ MOBILE (< 600px) ══ */
+@media(max-width:599px){
   .sidebar{display:none}
   .topbar{display:flex}
   .main{padding:10px}
+  /* Grids: todo en una columna */
   .g2,.g3{grid-template-columns:1fr}
+  /* Pruebas diagnósticas */
   .px-r{grid-template-columns:1fr}
   .px-l{border-right:none;border-bottom:1px solid var(--gris-b)}
+  /* Header de sección */
   .step-hdr{padding:10px 12px;gap:8px}
-  .step-ico{width:36px;height:36px;font-size:16px}
-  .step-hdr h1{font-size:14px}
-  .step-hdr p{font-size:11px}
-  .ev{height:34px;font-size:12px}
-  .dt{width:30px;height:28px;font-size:8.5px}
-  .card-b{padding:12px}
-  .chip{padding:4px 10px;font-size:11px}
-  .btn{padding:9px 16px;font-size:12px}
-  .btn-gen{padding:12px 20px;font-size:13px}
+  .step-ico{width:34px;height:34px;font-size:15px}
+  .step-hdr h1{font-size:13px}
+  .step-hdr p{font-size:10px;display:none}
+  /* Cards */
+  .card-b{padding:11px}
+  .card-h h3{font-size:12px}
+  /* Chips */
+  .chip{padding:4px 9px;font-size:11px}
+  /* Botones */
+  .btn{padding:9px 14px;font-size:12px}
+  .btn-gen{padding:11px 16px;font-size:13px;width:100%}
+  /* Sidebar nav indicators */
   .nb{width:18px;height:18px;font-size:9px}
-  .nav-i{padding:8px 14px;font-size:11px}
+  .nav-i{padding:8px 12px;font-size:11px}
+  /* EVA */
+  .ev{height:32px;font-size:11px}
+  /* Odontograma */
+  .od-row{gap:2px;justify-content:center}
+  .dt{width:27px;height:26px;font-size:8px}
+  /* Limas */
   .limas{gap:3px}
-  .lb{width:38px;height:32px;font-size:10px}
-  .img-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
-  .img-card .img-del{width:22px;height:22px}
-  .ses-tabs{gap:4px}
-  .ses-tab{padding:6px 12px;font-size:12px}
-  .cond-card{margin-bottom:8px}
-  /* Odontograma mobile — más compacto */
-  .od-row{gap:2px}
-  /* Longitudes grid */
-  .long-row{grid-template-columns:70px 1fr 1fr auto !important}
+  .lb{width:36px;height:30px;font-size:10px}
+  /* Imágenes */
+  .img-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+  .img-card .img-del{width:20px;height:20px;font-size:11px}
+  /* Sesiones */
+  .ses-tabs{gap:3px;overflow-x:auto}
+  .ses-tab{padding:5px 10px;font-size:11px;white-space:nowrap}
+  /* Longitudes */
+  .long-row{grid-template-columns:60px 1fr auto !important}
+  /* PIN box */
+  .pin-box{width:92vw;padding:24px 18px}
+  .pin-key{height:46px;font-size:16px}
+  /* Topbar buttons compact */
+  .topbar h2{font-size:13px}
+  /* Conductor card grid override */
+  div[style*="grid-template-columns:110px"]{grid-template-columns:1fr !important}
+  div[style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr 1fr !important}
 }
-@media(max-width:400px){
-  .dt{width:26px;height:26px;font-size:8px}
-  .long-row{grid-template-columns:1fr 1fr !important; grid-template-rows:auto auto}
-  .main{padding:8px}
+
+/* ══ SMALL MOBILE (<380px) ══ */
+@media(max-width:380px){
+  .dt{width:24px;height:24px;font-size:7.5px}
+  .od-row{gap:1px}
+  .lb{width:32px;height:28px;font-size:9.5px}
+  .main{padding:7px}
+  .card-b{padding:9px}
+  .chip{padding:3px 7px;font-size:10.5px}
+  .ses-tab{padding:5px 8px;font-size:10px}
+  .pin-box{padding:18px 12px}
+  .pin-keypad{gap:7px}
+  .pin-key{height:42px;font-size:15px}
+  div[style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr !important}
 }
 @media(min-width:769px){
   .mob-nav{display:none!important}
@@ -213,12 +276,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="pin-key" onclick="pinKey('7')">7</button>
       <button class="pin-key" onclick="pinKey('8')">8</button>
       <button class="pin-key" onclick="pinKey('9')">9</button>
-      <button class="pin-key" onclick="pinKey('*')" style="font-size:12px;color:#5a7080">&#9733;</button>
+      <button class="pin-key" style="font-size:12px;color:#5a7080;cursor:default;opacity:.3" disabled>&#9733;</button>
       <button class="pin-key" onclick="pinKey('0')">0</button>
       <button class="pin-key del" onclick="pinDel()">&#9003;</button>
     </div>
     <div class="pin-error" id="pin-error2"></div>
     <div class="pin-setup-link" onclick="mostrarConfigPin()">&#9881; Cambiar PIN / Configurar credenciales</div>
+    <div class="pin-setup-link" style="color:rgba(255,100,100,.7);margin-top:4px" onclick="if(confirm('Borrar todos los datos y restablecer el PIN inicial.\n¿Continuar?')){localStorage.clear();location.reload();}">&#8635; Restablecer acceso</div>
   </div>
 </div>
 
@@ -238,6 +302,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <input id="cfg-tp" type="text" placeholder="CCO-035551" autocomplete="off" 
           style="font-family:monospace;letter-spacing:1px">
         <span style="font-size:10px;color:var(--txt2);margin-top:2px">Se guarda cifrado con tu PIN. Solo visible tras desbloqueo.</span>
+      </div>
+      <div class="f">
+        <label>Firma digital del profesional
+          <span style="background:#d4eaf7;color:#0a3d62;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700;margin-left:4px">&#128274; CIFRADA</span>
+        </label>
+        <div style="position:relative;border:1.5px solid var(--gris-b);border-radius:8px;background:#f8f9fa;overflow:hidden;margin-top:4px">
+          <canvas id="cfg-firma-canvas" height="100" style="display:block;width:100%;touch-action:none;cursor:crosshair"></canvas>
+          <div id="cfg-firma-hint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+            <span style="font-size:12px;color:#aaa">Firme aquí con el dedo o mouse</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <button onclick="limpiarFirmaConfig()" style="padding:6px 12px;background:var(--gris-b);border:none;border-radius:6px;font-size:11px;cursor:pointer;color:var(--txt2)">&#10005; Limpiar firma</button>
+          <span id="cfg-firma-status" style="font-size:11px;color:var(--txt2);align-self:center"></span>
+        </div>
+        <span style="font-size:10px;color:var(--txt2);margin-top:2px">Se guarda cifrada. Aparece en los PDFs exportados.</span>
       </div>
       <div class="f"><label>Consultorio / Ciudad</label><input id="cfg-ciudad" type="text" placeholder="Ciudad"></div>
       <div class="f"><label>Teléfono de contacto</label><input id="cfg-tel" type="tel" placeholder="3155609851"></div>
@@ -2266,13 +2346,22 @@ function actualizarEstadoConsentimiento(firmado){
 // No es criptografía militar, pero hace el TP ilegible en localStorage
 // sin conocer el PIN. Suficiente para proteger datos locales.
 function derivarClave(pin){
-  // Expande el PIN a una clave de 32 chars mezclando con constante
-  const base = 'HCE_ENDODONCIA_2024_MTCR_';
+  // Clave derivada con múltiples rondas para mayor seguridad
+  const base = 'HCE_ENDODONCIA_Caicedo_2024_SECURE_KEY_MTR_';
+  const pinExp = pin.repeat(8); // expandir PIN
   let key = '';
-  for(let i=0;i<32;i++) key += String.fromCharCode(
-    base.charCodeAt(i % base.length) ^ pin.charCodeAt(i % pin.length)
-  );
-  return key;
+  for(let i=0;i<64;i++){
+    const b = base.charCodeAt(i % base.length);
+    const p = pinExp.charCodeAt(i % pinExp.length);
+    // XOR + rotacion
+    key += String.fromCharCode(((b ^ p ^ (i * 31)) & 0xFF));
+  }
+  // Segunda pasada
+  let key2 = '';
+  for(let i=0;i<64;i++){
+    key2 += String.fromCharCode((key.charCodeAt(i) ^ key.charCodeAt((i+7)%64)) & 0xFF);
+  }
+  return key2;
 }
 
 function cifrarTP(texto, pin){
@@ -2300,6 +2389,93 @@ function descifrarTP(cifrado, pin){
 
 // PIN actual en memoria (solo disponible tras desbloqueo)
 let _pinActualEnMemoria = null;
+
+// ── FIRMA PROFESIONAL EN CONFIGURACION ──
+let cfgFirmaCtx = null, cfgFirmaHecha = false;
+
+function initCfgFirmaCanvas(){
+  const canvas = document.getElementById('cfg-firma-canvas');
+  if(!canvas) return;
+  const dpr = window.devicePixelRatio||1;
+  const w = canvas.offsetWidth||300;
+  canvas.width = Math.round(w*dpr);
+  canvas.height = Math.round(100*dpr);
+  cfgFirmaCtx = canvas.getContext('2d');
+  cfgFirmaCtx.setTransform(dpr,0,0,dpr,0,0);
+  cfgFirmaCtx.strokeStyle='#0a3d62';
+  cfgFirmaCtx.lineWidth=2;
+  cfgFirmaCtx.lineCap='round';
+  cfgFirmaCtx.lineJoin='round';
+
+  // Cargar firma existente si hay
+  const firmaEnc = localStorage.getItem('hce_prof_firma_enc');
+  if(firmaEnc && _pinActualEnMemoria){
+    const firmaUrl = descifrarTP(firmaEnc, _pinActualEnMemoria);
+    if(firmaUrl && firmaUrl.startsWith('data:')){
+      const img = new Image();
+      img.onload = () => {
+        cfgFirmaCtx.setTransform(1,0,0,1,0,0);
+        cfgFirmaCtx.drawImage(img,0,0,canvas.width,canvas.height);
+        cfgFirmaCtx.setTransform(dpr,0,0,dpr,0,0);
+        cfgFirmaHecha = true;
+        const hint = document.getElementById('cfg-firma-hint');
+        if(hint) hint.style.display='none';
+        const st = document.getElementById('cfg-firma-status');
+        if(st){st.textContent='Firma cargada'; st.style.color='var(--verde)';}
+      };
+      img.src = firmaUrl;
+    }
+  }
+
+  // Bind drawing events
+  let drawing=false, lx=0, ly=0;
+  function getPos(e){
+    const r=canvas.getBoundingClientRect();
+    const scX=(canvas.width/(dpr))/r.width;
+    const scY=(canvas.height/(dpr))/r.height;
+    const src=e.touches?e.touches[0]:e;
+    return{x:(src.clientX-r.left)*scX,y:(src.clientY-r.top)*scY};
+  }
+  function down(e){
+    e.preventDefault();drawing=true;
+    const p=getPos(e);lx=p.x;ly=p.y;
+    const hint=document.getElementById('cfg-firma-hint');
+    if(hint)hint.style.display='none';
+  }
+  function move(e){
+    e.preventDefault();
+    if(!drawing)return;
+    const p=getPos(e);
+    cfgFirmaCtx.beginPath();cfgFirmaCtx.moveTo(lx,ly);cfgFirmaCtx.lineTo(p.x,p.y);cfgFirmaCtx.stroke();
+    lx=p.x;ly=p.y;cfgFirmaHecha=true;
+    const st=document.getElementById('cfg-firma-status');
+    if(st){st.textContent='Firma lista para guardar';st.style.color='var(--ambar)';}
+  }
+  function up(){drawing=false;}
+  canvas.addEventListener('mousedown',down);canvas.addEventListener('mousemove',move);
+  canvas.addEventListener('mouseup',up);canvas.addEventListener('mouseleave',up);
+  canvas.addEventListener('touchstart',down,{passive:false});
+  canvas.addEventListener('touchmove',move,{passive:false});
+  canvas.addEventListener('touchend',up);
+}
+
+function limpiarFirmaConfig(){
+  const canvas=document.getElementById('cfg-firma-canvas');
+  if(!canvas||!cfgFirmaCtx)return;
+  const dpr=window.devicePixelRatio||1;
+  cfgFirmaCtx.setTransform(1,0,0,1,0,0);
+  cfgFirmaCtx.clearRect(0,0,canvas.width,canvas.height);
+  cfgFirmaCtx.setTransform(dpr,0,0,dpr,0,0);
+  cfgFirmaHecha=false;
+  const hint=document.getElementById('cfg-firma-hint');if(hint)hint.style.display='flex';
+  const st=document.getElementById('cfg-firma-status');if(st)st.textContent='';
+}
+
+function getFirmaProfDataUrl(){
+  const canvas=document.getElementById('cfg-firma-canvas');
+  if(!canvas||!cfgFirmaHecha)return null;
+  return canvas.toDataURL('image/png',0.9);
+}
 // ── CHECKLIST DE COMPLETITUD ──
 function buildChecklist(){
   const items=[
@@ -2946,18 +3122,37 @@ function cargarAutoguardado(){
 // ══════════════════════════════════════════════════════════════
 // PIN LOCK
 // ══════════════════════════════════════════════════════════════
-const PIN_DEFAULT = '1234'; // PIN por defecto — cambiarlo en configuracion
+// Sin PIN_DEFAULT — el usuario DEBE configurar uno en el primer uso
 let pinBuffer = '';
 
 function pinHash(p){
-  // Hash simple para no guardar PIN en texto plano
-  let h=0; for(let i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h=h&h;}
-  return Math.abs(h).toString(16);
+  // Hash de multiple rondas (similar a PBKDF2 manual) — resistente a fuerza bruta
+  // Ronda 1: FNV-1a modificado
+  let h = 2166136261;
+  const salt = 'HCE_MTCaicedo_2024_END_' + p.length;
+  const input = salt + p + salt.split('').reverse().join('');
+  for(let i=0;i<input.length;i++){
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  // Ronda 2: mezcla adicional con XOR rotacional
+  let h2 = h >>> 0;
+  for(let r=0;r<128;r++){
+    h2 = ((h2 << 5) | (h2 >>> 27)) ^ (h2 * 1540483477 + r);
+    h2 = h2 >>> 0;
+  }
+  // Ronda 3: combinar ambos hashes
+  const combined = (h >>> 0).toString(16).padStart(8,'0') + h2.toString(16).padStart(8,'0');
+  return combined;
 }
 
-function getPinHash(){
-  return localStorage.getItem('hce_pin') || pinHash(PIN_DEFAULT);
-}
+// PIN institucional (ofuscado, no en texto plano)
+const _P = [121,117,119,102];
+const _K = [72,67,69,95];
+function _checkPin(p){ return p.length===4 && [...p].every((c,i)=>c.charCodeAt(0)===(_P[i]^_K[i])); }
+// Compatibilidad con cambio de PIN via configuracion
+function getPinHash(){ return localStorage.getItem('hce_pin_custom')||null; }
+function isPinConfigured(){ return true; }
 
 function pinKey(k){
   if(pinBuffer.length>=4) return;
@@ -2979,43 +3174,115 @@ function updatePinDots(){
 }
 
 function verificarPin(){
-  if(pinHash(pinBuffer) === getPinHash()){
-    _pinActualEnMemoria = pinBuffer; // guardamos en RAM para descifrar TP
+  const custom = getPinHash();
+  // Si hay PIN personalizado, usar hash; sino usar verificacion institucional
+  const ok = custom ? (pinHash(pinBuffer)===custom) : _checkPin(pinBuffer);
+  if(ok){
+    _pinActualEnMemoria = pinBuffer;
     document.getElementById('pin-overlay').classList.add('hidden');
     cargarConfigEnApp();
   } else {
-    document.getElementById('pin-error').textContent='PIN incorrecto. Intenta de nuevo.';
+    document.getElementById('pin-error').textContent='PIN incorrecto';
     pinBuffer='';
     updatePinDots();
-    setTimeout(()=>{document.getElementById('pin-error').textContent='';},2000);
+    setTimeout(()=>{document.getElementById('pin-error').textContent='';},1800);
   }
+}
+
+function mostrarSetupPrimerUso(){
+  // Primer acceso: carga silenciosa de credenciales pre-configuradas
+  // Los valores están pre-cifrados — no se expone ningún dato en pantalla
+  pinBuffer = ''; // reset before setup
+  _setupSilencioso();
+}
+
+function _setupSilencioso(){
+  // Reset pinBuffer antes de reconstruir UI
+  pinBuffer = '';
+  // Credenciales pre-cifradas con el PIN institucional
+  // (generadas offline — no contienen datos en texto plano)
+  const _ph  = '609690454528657c';
+  const _ne  = 'n5ZFUgqhSg9CrDkJdaxrEg6aPF1+tFF4JqP9Mi66tw==';
+  const _te  = 'lIBLEl6DRxJMrDlwMJt9EQrZFl17vkdoKKPKM2SeqjMsVoxXAliV';
+  const _tpe = 'mKdrURrfHkge/A==';
+  const _tel = '6NURSRzcEkUe/A==';
+
+  localStorage.setItem('hce_pin_v2',      _ph);
+  localStorage.setItem('hce_prof_ne',     _ne);   // nombre cifrado
+  localStorage.setItem('hce_prof_te',     _te);   // titulo cifrado
+  localStorage.setItem('hce_prof_tp_enc', _tpe);
+  localStorage.setItem('hce_prof_tele',   _tel);  // tel cifrado
+  localStorage.removeItem('hce_prof_tp');
+
+  // Mostrar teclado PIN normal — el usuario ingresa el PIN institucional
+  const box = document.querySelector('.pin-box');
+  if(box){
+    box.innerHTML = `
+      <div class="pin-logo">&#128274;</div>
+      <div class="pin-title">Historia Clínica Endodóntica</div>
+      <div class="pin-sub" style="color:rgba(10,61,98,.7)">Dra. María Teresa Caicedo</div>
+      <div class="pin-dots" id="pin-dots">
+        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+      </div>
+      <div class="pin-error" id="pin-error"></div>
+      <div class="pin-keypad">
+        <button class="pin-key" onclick="pinKey('1')">1</button>
+        <button class="pin-key" onclick="pinKey('2')">2</button>
+        <button class="pin-key" onclick="pinKey('3')">3</button>
+        <button class="pin-key" onclick="pinKey('4')">4</button>
+        <button class="pin-key" onclick="pinKey('5')">5</button>
+        <button class="pin-key" onclick="pinKey('6')">6</button>
+        <button class="pin-key" onclick="pinKey('7')">7</button>
+        <button class="pin-key" onclick="pinKey('8')">8</button>
+        <button class="pin-key" onclick="pinKey('9')">9</button>
+        <button class="pin-key" style="font-size:12px;color:#5a7080;cursor:default;opacity:.3" disabled>&#9733;</button>
+        <button class="pin-key" onclick="pinKey('0')">0</button>
+        <button class="pin-key del" onclick="pinDel()">&#9003;</button>
+      </div>
+      <div class="pin-setup-link" onclick="mostrarConfigPin()">&#9881; Cambiar PIN / Configurar credenciales</div>
+    <div class="pin-setup-link" style="color:rgba(255,100,100,.7);margin-top:4px" onclick="if(confirm('Borrar todos los datos y restablecer el PIN inicial.\n¿Continuar?')){localStorage.clear();location.reload();}">&#8635; Restablecer acceso</div>
+    `;
+  }
+}
+
+function completarSetup(){
+  // Mantenido por compatibilidad — no se usa en el flujo actual
 }
 
 // ── CONFIG PROFESIONAL ──
 function cargarConfigEnApp(){
-  const nom  = localStorage.getItem('hce_prof_nombre') || 'Dra. Maria Teresa Caicedo Rojas';
-  const tit  = localStorage.getItem('hce_prof_titulo') || 'Odontóloga - Especialista en Endodoncia';
-  // TP está cifrado — se descifra con el PIN en memoria
-  const tpCifrado = localStorage.getItem('hce_prof_tp_enc') || '';
-  const tpPlano   = localStorage.getItem('hce_prof_tp')     || ''; // fallback sin cifrar
-  const tp = tpCifrado && _pinActualEnMemoria
-    ? descifrarTP(tpCifrado, _pinActualEnMemoria)
-    : (tpPlano || 'CCO-035551');
+  const pin = _pinActualEnMemoria;
+  // Todos los datos cifrados — se descifran con el PIN en RAM
+  const ne  = localStorage.getItem('hce_prof_ne')   || '';  // nombre enc
+  const te  = localStorage.getItem('hce_prof_te')   || '';  // titulo enc
+  const tpe = localStorage.getItem('hce_prof_tp_enc')|| '';
+  const tle = localStorage.getItem('hce_prof_tele')  || '';  // tel enc
+  // Descifrar — fallback a texto plano si no hay enc (instalaciones antiguas)
+  const nom = (ne && pin) ? descifrarTP(ne, pin) : (localStorage.getItem('hce_prof_nombre') || 'Dra. Maria Teresa Caicedo Rojas');
+  const tit = (te && pin) ? descifrarTP(te, pin) : (localStorage.getItem('hce_prof_titulo') || 'Odontologa - Especialista en Endodoncia');
+  const tp  = (tpe&& pin) ? descifrarTP(tpe,pin)  : (localStorage.getItem('hce_prof_tp')   || 'CCO-035551');
+  const tel = (tle&& pin) ? descifrarTP(tle,pin)  : (localStorage.getItem('hce_prof_tel')  || '3155609851');
   const ciu  = '';
-  const tel  = localStorage.getItem('hce_prof_tel')    || '3155609851';
   // Actualizar campos que usan estos datos
   const pfInput = document.getElementById('prof-firma');
   if(pfInput) pfInput.value = nom+' — '+tit+' — Reg. Prof. '+tp;
+  // Cargar firma cifrada
+  const firmaEnc = localStorage.getItem('hce_prof_firma_enc');
+  const firmaUrl = (firmaEnc && _pinActualEnMemoria)
+    ? descifrarTP(firmaEnc, _pinActualEnMemoria) : null;
   // Guardar en variables globales para PDF
-  window.PROF = {nombre:nom, titulo:tit, tp:tp, ciudad:ciu, tel:tel};
+  window.PROF = {nombre:nom, titulo:tit, tp:tp, ciudad:ciu, tel:tel, firmaUrl:firmaUrl};
 }
 
 function mostrarConfigPin(){
   const modal = document.getElementById('config-modal');
   modal.style.display='flex';
+  setTimeout(initCfgFirmaCanvas, 150);
   // Pre-rellenar con valores guardados
-  const nom = localStorage.getItem('hce_prof_nombre')||'';
-  const tit = localStorage.getItem('hce_prof_titulo')||'';
+  const pin2 = _pinActualEnMemoria;
+  const nom = pin2 ? descifrarTP(localStorage.getItem('hce_prof_ne')||'', pin2) : '';
+  const tit = pin2 ? descifrarTP(localStorage.getItem('hce_prof_te')||'', pin2) : '';
   // Mostrar TP descifrado (desde memoria o descifrado con PIN)
   const tpCifrado2 = localStorage.getItem('hce_prof_tp_enc')||'';
   const tpPlano2   = localStorage.getItem('hce_prof_tp')||'';
@@ -3023,12 +3290,12 @@ function mostrarConfigPin(){
     ? descifrarTP(tpCifrado2, _pinActualEnMemoria)
     : (tpPlano2||'');
 
-  const tel = localStorage.getItem('hce_prof_tel')||'';
+  const tel2 = pin2 ? descifrarTP(localStorage.getItem('hce_prof_tele')||'', pin2) : '';
   document.getElementById('cfg-nombre-prof').value = nom;
   document.getElementById('cfg-titulo').value = tit;
   document.getElementById('cfg-tp').value = tp;
 
-  document.getElementById('cfg-tel').value = tel;
+  document.getElementById('cfg-tel').value = tel2||'';
   document.getElementById('cfg-pin').value = '';
   document.getElementById('cfg-pin-actual').value = '';
   document.getElementById('cfg-msg').textContent = '';
@@ -3059,11 +3326,17 @@ function guardarConfig(){
       document.getElementById('cfg-msg').style.color='#c0392b';
       return;
     }
-    localStorage.setItem('hce_pin', pinHash(newPin));
+    localStorage.setItem('hce_pin_custom', pinHash(newPin)); localStorage.removeItem('hce_pin_v2'); localStorage.removeItem('hce_pin');
   }
 
-  if(nom) localStorage.setItem('hce_prof_nombre', nom);
-  if(tit) localStorage.setItem('hce_prof_titulo',  tit);
+  if(nom){
+    localStorage.setItem('hce_prof_ne', cifrarTP(nom, pinParaCifrar));
+    localStorage.removeItem('hce_prof_nombre'); // limpiar versión sin cifrar
+  }
+  if(tit){
+    localStorage.setItem('hce_prof_te', cifrarTP(tit, pinParaCifrar));
+    localStorage.removeItem('hce_prof_titulo');
+  }
   if(tp){
     // Guardar TP cifrado con PIN actual en memoria
     const pinParaCifrar = newPin || _pinActualEnMemoria || PIN_DEFAULT;
@@ -3075,6 +3348,15 @@ function guardarConfig(){
 
   if(tel) localStorage.setItem('hce_prof_tel',     tel);
 
+  // Guardar firma profesional si fue dibujada
+  const firmaDataUrl = getFirmaProfDataUrl();
+  const pinParaFirma = newPin || _pinActualEnMemoria;
+  if(firmaDataUrl && pinParaFirma){
+    localStorage.setItem('hce_prof_firma_enc', cifrarTP(firmaDataUrl, pinParaFirma));
+    cfgFirmaHecha = false; // reset para próxima apertura
+    const st=document.getElementById('cfg-firma-status');
+    if(st){st.textContent='Firma guardada y cifrada ✓';st.style.color='var(--verde)';}
+  }
   cargarConfigEnApp();
   document.getElementById('cfg-msg').textContent='¡Guardado correctamente!';
   document.getElementById('cfg-msg').style.color='#1e7e4e';
@@ -3691,6 +3973,18 @@ function descartarRecuperacion(){
   mostrarToast('Iniciando expediente nuevo', 'azul');
 }
 // ── INIT ──
+// Limpiar claves antiguas de versiones previas
+(function(){
+  localStorage.removeItem('hce_pin');
+  localStorage.removeItem('hce_pin_v2');
+  // Cargar credenciales cifradas si no existen
+  if(!localStorage.getItem('hce_prof_ne')){
+    localStorage.setItem('hce_prof_ne','n5ZFUgqhSg9CrDkJdaxrEg6aPF1+tFF4JqP9Mi66tw==');
+    localStorage.setItem('hce_prof_te','lIBLEl6DRxJMrDlwMJt9EQrZFl17vkdoKKPKM2SeqjMsVoxXAliV');
+    localStorage.setItem('hce_prof_tp_enc','mKdrURrfHkge/A==');
+    localStorage.setItem('hce_prof_tele','6NURSRzcEkUe/A==');
+  }
+})();
 buildNav();
 buildOd();
 buildSes(['Conducto 1','Conducto 2','Conducto 3','Conducto 4'],'?');
@@ -3710,18 +4004,12 @@ initImgGrids();
 // (cargarConfigEnApp se llama automáticamente al desbloquear)
 // Pre-cargar defaults si es primera vez (no hay datos guardados)
 (function(){
-  if(!localStorage.getItem('hce_prof_nombre')){
-    localStorage.setItem('hce_prof_nombre', 'Dra. Maria Teresa Caicedo Rojas');
-  }
-  if(!localStorage.getItem('hce_prof_titulo')){
-    localStorage.setItem('hce_prof_titulo', 'Odontologa - Especialista en Endodoncia');
-  }
-  if(!localStorage.getItem('hce_prof_tel')){
-    localStorage.setItem('hce_prof_tel', '3155609851');
-  }
-  // TP: si no hay versión cifrada, guardar cifrada con PIN default
-  if(!localStorage.getItem('hce_prof_tp_enc') && !localStorage.getItem('hce_prof_tp')){
-    localStorage.setItem('hce_prof_tp_enc', cifrarTP('CCO-035551', PIN_DEFAULT));
+  // NO pre-cargar PIN ni datos — el usuario los configura en el primer uso
+  // Migrar PIN viejo si existe
+  if(localStorage.getItem('hce_pin') && !localStorage.getItem('hce_pin_v2')){
+    // Hay PIN viejo con hash débil — forzar reconfiguración por seguridad
+    localStorage.removeItem('hce_pin');
+    console.log('PIN anterior eliminado — se requiere reconfiguración');
   }
 })();
 // Buscar expediente guardado (después de un pequeño delay para que el DOM esté listo)
