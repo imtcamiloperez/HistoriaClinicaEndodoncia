@@ -557,14 +557,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
               <span style="font-size:12px;color:var(--txt2)" id="cons-cedula-ph">Sin foto</span>
             </div>
             <div style="display:flex;gap:6px">
-              <label style="flex:1;padding:8px;background:var(--azul-m);color:#fff;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-align:center">
-                &#128444; Galeria
-                <input type="file" accept="image/*" style="display:none" onchange="cargarFotoCons(this,'cedula')">
-              </label>
-              <button onclick="abrirCamaraConsentimiento('cedula')" style="flex:1;padding:8px;background:var(--verde);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">
-                &#128247; Camara
+              <button onclick="abrirCamaraConsentimiento('cedula')" style="flex:1;padding:10px;background:var(--verde);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">
+                &#128247; Tomar foto con camara
               </button>
-              <button onclick="quitarFotoCons('cedula')" style="padding:8px 12px;background:var(--gris-b);color:var(--txt2);border:none;border-radius:8px;font-size:12px;cursor:pointer">&#10005;</button>
+              <button onclick="quitarFotoCons('cedula')" style="padding:10px 14px;background:var(--gris-b);color:var(--txt2);border:none;border-radius:8px;font-size:13px;cursor:pointer">&#10005;</button>
             </div>
             <p id="cedula-status" style="font-size:11px;color:var(--txt2);text-align:center">Foto de cedula pendiente (opcional)</p>
           </div>
@@ -578,14 +574,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
               <span style="font-size:12px;color:var(--txt2)" id="cons-selfie-ph">Sin foto</span>
             </div>
             <div style="display:flex;gap:6px">
-              <label style="flex:1;padding:8px;background:var(--azul-m);color:#fff;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-align:center">
-                &#128444; Galeria
-                <input type="file" accept="image/*" style="display:none" onchange="cargarFotoCons(this,'selfie')">
-              </label>
-              <button onclick="abrirCamaraConsentimiento('selfie')" style="flex:1;padding:8px;background:var(--verde);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">
-                &#128247; Camara frontal
+              <button onclick="abrirCamaraConsentimiento('selfie')" style="flex:1;padding:10px;background:var(--verde);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">
+                &#128247; Tomar foto con camara frontal
               </button>
-              <button onclick="quitarFotoCons('selfie')" style="padding:8px 12px;background:var(--gris-b);color:var(--txt2);border:none;border-radius:8px;font-size:12px;cursor:pointer">&#10005;</button>
+              <button onclick="quitarFotoCons('selfie')" style="padding:10px 14px;background:var(--gris-b);color:var(--txt2);border:none;border-radius:8px;font-size:13px;cursor:pointer">&#10005;</button>
             </div>
             <p id="selfie-status" style="font-size:11px;color:var(--txt2);text-align:center">Foto del paciente (opcional)</p>
           </div>
@@ -1034,6 +1026,17 @@ function buildNav(){
 }
 
 function goSec(n){
+  // Validacion al salir del consentimiento sin firmar
+  if(cur===2 && n>2 && !consentimientoData){
+    const tieneOTP = otpGenerado && Date.now()<otpExpira;
+    const tieneFirma = firmaHecha;
+    const tieneDatos = !!(gv('nombre')&&gv('doc'));
+    if(tieneDatos && (tieneOTP||tieneFirma)){
+      if(!confirm('⚠️ El consentimiento tiene datos pero NO fue firmado.\n\n¿Continuar sin firmar?\n\nQuedará PENDIENTE hasta que regreses y completes la firma.')){
+        return;
+      }
+    }
+  }
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('vis'));
   document.getElementById(SECS[n].id).classList.add('vis');
   document.querySelectorAll('.nav-i').forEach((el,i)=>el.classList.toggle('on',i===n));
@@ -2193,12 +2196,20 @@ function limpiarFirma(){const canvas=document.getElementById('firma-canvas');con
 function hashDoc(str){let hash=0;for(let i=0;i<str.length;i++){const char=str.charCodeAt(i);hash=((hash<<5)-hash)+char;hash=hash&hash;}return Math.abs(hash).toString(16).toUpperCase().padStart(8,'0');}
 
 function firmarConsentimiento(){
-  if(!gv('nombre')||!gv('doc')){alert('Primero completa el nombre y documento del paciente en la seccion 01.');return;}
-  if(!document.getElementById('cons-leido').checked){alert('El paciente debe confirmar que leyo y entendio el consentimiento.');return;}
-  if(!firmaHecha){alert('El paciente debe firmar en el recuadro de firma digital.');return;}
+  const errores=[];
+  if(!gv('nombre')||!gv('doc')) errores.push('Nombre y documento del paciente (seccion 1)');
+  if(!document.getElementById('cons-leido').checked) errores.push('Casilla de confirmacion de lectura del documento');
+  if(!firmaHecha) errores.push('Firma digital del paciente (toca Ampliar para firmar)');
+  if(!fotoData.cedula) errores.push('Foto del documento de identidad (Paso 1 - Camara)');
+  if(!fotoData.selfie) errores.push('Foto del paciente firmando (Paso 2 - Camara frontal)');
   const otpIngresado=String(document.getElementById('otp-input').value).trim();
-  if(!otpGenerado){alert('Primero genera el codigo OTP y entregaselo al paciente.');return;}
-  if(Date.now()>otpExpira){alert('El codigo OTP expiro. Genera uno nuevo.');otpGenerado=null;document.getElementById('otp-display').style.display='none';return;}
+  if(otpIngresado.length<6) errores.push('Codigo OTP de 6 digitos');
+  if(errores.length>0){
+    alert('Faltan los siguientes elementos:\n\n- '+errores.join('\n- '));
+    return;
+  }
+  if(!otpGenerado){alert('Primero genera el codigo OTP con el boton "Generar codigo".');return;}
+  if(Date.now()>otpExpira){alert('El codigo OTP expiro (5 min). Genera uno nuevo.');otpGenerado=null;document.getElementById('otp-display').style.display='none';return;}
   if(otpIngresado!==otpGenerado){alert('Codigo OTP incorrecto. Verifica e intenta de nuevo.');return;}
 
   const ahora=new Date();
