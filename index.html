@@ -357,8 +357,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow
 </div>
 
 <div class="mob-nav" id="mob-nav" onclick="toggleMenu()">
-  <div class="mob-nav-inner" onclick="e=>e.stopPropagation()">
-    <button class="mob-close" onclick="toggleMenu()">&#10005; Cerrar menu</button>
+  <div class="mob-nav-inner" onclick="event.stopPropagation()">
+    <button class="mob-close" onclick="event.stopPropagation();closeMobNav()" style="background:rgba(255,255,255,.1);color:#fff;font-weight:600;font-size:13px;padding:12px 18px;border-radius:8px;margin:10px 12px;width:calc(100% - 24px);text-align:center;border:1px solid rgba(255,255,255,.2)">&#10005; Cerrar menú</button>
     <nav id="mob-nav-list"></nav>
   </div>
 </div>
@@ -1108,7 +1108,7 @@ let cur=0, dSel=null;
 function buildNav(){
   const tpl=SECS.map((s,i)=>`<div class="nav-i ${i===0?'on':''}" id="ni${i}" onclick="goSec(${i})"><div class="nb">${i+1}</div><span>${s.lbl}</span></div>`).join('');
   document.getElementById('desk-nav').innerHTML=tpl;
-  document.getElementById('mob-nav-list').innerHTML=tpl.replace(/onclick="goSec/g,'onclick="toggleMenu();goSec');
+  document.getElementById('mob-nav-list').innerHTML=tpl.replace(/onclick="goSec/g,'onclick="closeMobNav();goSec');
 }
 
 function goSec(n){
@@ -1139,7 +1139,15 @@ function goSec(n){
   window.scrollTo(0,0);
 }
 function navS(d){goSec(Math.max(0,Math.min(SECS.length-1,cur+d)));}
-function toggleMenu(){document.getElementById('mob-nav').classList.toggle('open');}
+function toggleMenu(){
+  const nav=document.getElementById('mob-nav');
+  if(!nav) return;
+  nav.classList.toggle('open');
+}
+function closeMobNav(){
+  const nav=document.getElementById('mob-nav');
+  if(nav) nav.classList.remove('open');
+}
 
 function sc(el,id,multi=false){
   const p=document.getElementById(id);if(!p)return;
